@@ -702,8 +702,3 @@ We traverse the string once, and for each character, we update the bitmask and c
 
 Question Bank
 - [count-triplets-that-can-form-two-arrays-of-equal-xor](https://leetcode.com/problems/count-triplets-that-can-form-two-arrays-of-equal-xor/)
-
-
-
-
-

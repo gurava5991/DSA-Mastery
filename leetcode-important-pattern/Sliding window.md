@@ -1,5 +1,4 @@
 # Sliding Window Pattern 
-<br>
 
 ## Sliding Window Technique: An Overview
 The **sliding window technique** is a popular and efficient method used to solve problems that involve processing contiguous subarrays (or sublists) of an array or list. Instead of recalculating values from scratch for each subarray, sliding window methods allow us to efficiently process and analyze data by "sliding" a window across the array, making adjustments incrementally as the window moves.
@@ -12,7 +11,7 @@ Sliding window techniques are ideal in problems where:
 <br/>
 
 ## Types of Sliding Window Techniques
-### 1. Static Dynamic Window(Fixed Sliding Window Technique):
+### 1. Static  Window(Fixed Sliding Window Technique):
 In the fixed sliding window technique, the size of the window remains constant as it moves across the array. This means that at each step, we include a new element in the window and remove the oldest element, while maintaining and updating the relevant metrics or properties (like sum, max, etc.).
 **When to Use:**
 * The problem specifies a fixed window size (e.g., "find the maximum sum of a subarray of size k").

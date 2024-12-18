@@ -15,8 +15,7 @@ public class CountingSort {
         }
         int[] output = new int[nums.length];
         for(int i = nums.length - 1 ; i >= 0 ; i--){
-            output[count[nums[i]] - 1] = nums[i];
-            count[nums[i]]--; // decrease count for same numbers
+            output[--count[nums[i]]] = nums[i];
         }
         System.out.println(Arrays.toString(output));
 

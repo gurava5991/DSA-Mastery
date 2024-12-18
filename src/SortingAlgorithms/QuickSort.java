@@ -39,6 +39,7 @@ public class QuickSort {
                 arr[j] = temp;
             }
         }
+        System.out.println(Arrays.toString(arr));
         // Swap pivot with the element at j
         arr[low] = arr[j];
         arr[j] = pivot;
