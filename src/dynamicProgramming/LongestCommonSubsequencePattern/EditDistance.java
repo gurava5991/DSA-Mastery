@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class EditDistance {
     static int[][] dp ;
     public static void main(String[] args) {
-        String s1 = "intention" , s2 = "execution";
+        String s1 = "planet" , s2 = "plan";
         int m = s1.length() , n = s2.length();
         dp = new int[n][m];
         for(int[] arr : dp)

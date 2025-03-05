@@ -6,7 +6,7 @@ Before diving into the prefix sum , some warm up problems for this patterns
 3 . [Find the Middle Index in Array](https://leetcode.com/problems/find-the-middle-index-in-array/description/)<br>
 
 Given a sequence of integers a0, a1, . . . , aN−1, you will be given Q queries
-of the form [L, R). For each query, compute S(L, R) = aL+aL+1+· · ·+aR−1.
+of the form [L, R]. For each query, compute S(L, R) = aL+aL+1+· · ·+aR−1.
 
 ![Prefix Image](https://github.com/Badam4321/DSA-Mastery/blob/master/leetcode-important-pattern/images/prefix.png?raw=true)
 
@@ -204,7 +204,89 @@ class Solution {
 
 Questions for above patterns
 - [Product Of Array Except it self](https://leetcode.com/problems/product-of-array-except-self/)
+
+## Number Of Sub Arrays With Odd Sum
 - [number-of-sub-arrays-with-odd-sum](https://leetcode.com/problems/number-of-sub-arrays-with-odd-sum/)
+
+```java
+Given an array of integers arr, return the number of subarrays with an odd sum.
+
+Since the answer can be very large, return it modulo 109 + 7.
+
+ 
+
+Example 1:
+
+Input: arr = [1,3,5]
+Output: 4
+Explanation: All subarrays are [[1],[1,3],[1,3,5],[3],[3,5],[5]]
+All sub-arrays sum are [1,4,9,3,8,5].
+Odd sums are [1,9,3,5] so the answer is 4.
+Example 2:
+
+Input: arr = [2,4,6]
+Output: 0
+Explanation: All subarrays are [[2],[2,4],[2,4,6],[4],[4,6],[6]]
+All sub-arrays sum are [2,6,12,4,10,6].
+All sub-arrays have even sum and the answer is 0.
+Example 3:
+
+Input: arr = [1,2,3,4,5,6,7]
+Output: 16
+```
+**Key Observations:**<br>
+Odd and Even Properties:
+* Odd + Odd = Even
+* Even + Even = Even
+* Odd + Even = Odd
+
+This property is crucial because it allows us to track the prefix sums of the array to determine whether a sub-array sum is odd.
+
+**Intuition** <br>
+1. As we iterate through the array, we can track the number of times the prefix sum has been odd or even so far.
+2. If the current prefix sum is odd, the sub-array sum will be odd if the previous prefix sum was even (and vice versa)
+
+**Algorithm Steps:**
+
+**Initialization:**
+* Start with odd_count = 0 and even_count = 1 (to handle the case when the prefix sum is odd initially).
+* Maintain a running prefix sum (current_sum = 0).
+* Initialize result = 0 to count the number of odd sub-arrays.
+
+**Iterate Through the Array:**<br>
+* For each element in the array:
+* Add the element to current_sum.
+* Check if current_sum is odd or even.
+* If current_sum is odd, add even_count to result (because only those sub-arrays formed with a previous even prefix sum will result in an odd sum).
+* If current_sum is even, add odd_count to result.
+* Update odd_count or even_count based on the parity of current_sum.
+
+```java
+class Solution {
+    public int numOfSubarrays(int[] arr) {
+        int oddCount = 0, evenCount = 1, prefixSum = 0, res = 0;
+        for (int x : arr) {
+            prefixSum += x;
+            if (prefixSum % 2 == 1) {
+                res += evenCount;
+                oddCount++;
+            } else {
+                res += oddCount;
+                evenCount++;
+            }
+            res %= 1000000007;
+        }
+        return res;
+    }
+}
+```
+
+**Complexity Analysis:**
+
+**Time Complexity**: O(n), where n is the length of the array, as we iterate through the array once.
+
+**Space Complexity:** O(1), as we use constant extra space.
+
 - [contiguous-array](https://leetcode.com/problems/contiguous-array/)
 
 ## Prefix Sum Technique + Hashing(Important for Interview)
@@ -608,6 +690,156 @@ Questions Bank
 - [Count of Interesting Subarrays](https://leetcode.com/problems/count-of-interesting-subarrays/description/)
 
 ## Prefix Sum + XOR
+
+-[Subarrays with XOR ‘K’](https://www.naukri.com/code360/problems/subarrays-with-xor-k_6826258)
+```java
+Problem statement
+Given an array ‘A’ consisting of ‘N’ integers and an integer ‘B’, find the number of subarrays of array ‘A’ whose bitwise XOR( ⊕ ) of all elements is equal to ‘B’.
+
+A subarray of an array is obtained by removing some(zero or more) elements from the front and back of the array.
+Example:
+Input: ‘N’ = 4 ‘B’ = 2
+‘A’ = [1, 2, 3, 2]
+
+Output: 3
+
+Explanation: Subarrays have bitwise xor equal to ‘2’ are: [1, 2, 3, 2], [2], [2].
+```
+**Intuition**
+
+The XOR operation has properties that make it well-suited for this problem:
+
+**Property of XOR**: If a ^ b = c, then a = b ^ c.
+
+This allows us to check for a subarray with XOR K using prefix XORs.
+
+**Prefix XOR:** The XOR of elements from index 0 to i is called the prefix XOR.
+
+The XOR of any subarray nums[l...r] can be calculated using:
+
+prefixXOR[r] ^ prefixXOR[l-1] = K
+
+Rearranging, we get:
+
+prefixXOR[l-1] = prefixXOR[r] ^ K
+
+```java
+Approach
+
+Prefix XOR Calculation:
+
+Compute the XOR of elements as we iterate through the array.
+
+Use a hash map to store the frequency of each prefix XOR encountered.
+
+Subarray Count:
+
+For each prefix XOR currXOR, check if currXOR ^ K exists in the hash map.
+
+If it exists, it means there are subarrays ending at the current index whose XOR is K.
+
+Update Hash Map:
+
+Update the frequency of currXOR in the hash map.
+```
+
+```java
+import java.util.HashMap;
+
+class Solution {
+    public int subarraysWithXorK(int[] nums, int K) {
+        int currXOR = 0;
+        int count = 0;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        
+        // Initialize the map with 0 XOR having frequency 1
+        map.put(0, 1);
+        
+        for (int num : nums) {
+            currXOR ^= num;
+
+            // Check if currXOR ^ K exists in the map
+            if (map.containsKey(currXOR ^ K)) {
+                count += map.get(currXOR ^ K);
+            }
+
+            // Update the frequency of currXOR in the map
+            map.put(currXOR, map.getOrDefault(currXOR, 0) + 1);
+        }
+
+        return count;
+    }
+}
+```
+
+**Time Complexity:** where  is the length of the array. We traverse the array once, and all hash map operations (insert, get) are  on average.
+
+**Space Complexity:**
+in the worst case, for storing prefix XOR values in the hash map.
+
+-[XOR Queries of a Subarray](https://leetcode.com/problems/xor-queries-of-a-subarray/description/)
+You are given an array arr of positive integers. You are also given the array queries where queries[i] = [lefti, righti].
+
+For each query i compute the XOR of elements from lefti to righti (that is, arr[lefti] XOR arr[lefti + 1] XOR ... XOR arr[righti] ).
+
+Return an array answer where answer[i] is the answer to the ith query.
+```java
+Example 1:
+
+Input: arr = [1,3,4,8], queries = [[0,1],[1,2],[0,3],[3,3]]
+Output: [2,7,14,8] 
+Explanation: 
+The binary representation of the elements in the array are:
+1 = 0001 
+3 = 0011 
+4 = 0100 
+8 = 1000 
+The XOR values for queries are:
+[0,1] = 1 xor 3 = 2 
+[1,2] = 3 xor 4 = 7 
+[0,3] = 1 xor 3 xor 4 xor 8 = 14 
+[3,3] = 8
+Example 2:
+
+Input: arr = [4,8,2,10], queries = [[2,3],[1,3],[0,0],[0,3]]
+Output: [8,0,4,4]
+ 
+
+Constraints:
+
+1 <= arr.length, queries.length <= 3 * 104
+1 <= arr[i] <= 109
+queries[i].length == 2
+0 <= lefti <= righti < arr.length
+```
+Intuition for this Question
+Lets  take arr[0..r] = xr;
+Lets take arr[0..l-1] = x;
+lets take arr[l..r] = k;
+x ^ k = xr;
+x ^ k ^ x = xr ^ x;
+k = xr ^ x ;
+so our formula is k = arr[0..r] ^ arr[0..l-1]
+
+```java
+class Solution {
+    public int[] xorQueries(int[] arr, int[][] queries) {
+        int[] ans = new int[queries.length];
+        for(int  i = 1 ; i < arr.length ; i++){
+            arr[i] = arr[i - 1] ^ arr[i];
+        } 
+        for(int i = 0 ; i < queries.length ; i++){
+            if(queries[i][0] == 0){
+                ans[i] = arr[queries[i][1]];
+            }
+            else 
+                ans[i] = arr[queries[i][1]] ^ arr[queries[i][0] - 1];
+        }
+        return ans;
+    }
+}
+```
+
 - [Find the Longest Substring Containing Vowels in Even Counts](https://leetcode.com/problems/find-the-longest-substring-containing-vowels-in-even-counts/description/)
 
 Given the string s, return the size of the longest substring containing each vowel an even number of times. That is, 'a', 'e', 'i', 'o', and 'u' must appear an even number of times.
@@ -702,3 +934,155 @@ We traverse the string once, and for each character, we update the bitmask and c
 
 Question Bank
 - [count-triplets-that-can-form-two-arrays-of-equal-xor](https://leetcode.com/problems/count-triplets-that-can-form-two-arrays-of-equal-xor/)
+
+# **Prefix Sum in a Matrix – A Complete Guide**
+
+## **1. What is Prefix Sum in a Matrix?**
+- **Prefix Sum in a Matrix** is a technique used to efficiently compute the sum of submatrices.
+- Instead of calculating the sum from scratch every time, we preprocess the matrix into a **prefix sum matrix**, which allows **O(1) query time** for sum calculations.
+
+---
+
+## **2. How to Construct a Prefix Sum Matrix?**
+Given an `n × m` matrix `arr[][]`, the **prefix sum matrix** `prefix[][]` is defined as:
+
+
+### **Row-wise First, Then Column-wise Approach**
+Instead of calculating the prefix sum in a single step, we can first compute the row-wise prefix sum and then the column-wise prefix sum.
+
+### **Step 1: Compute Row-wise Prefix Sum**
+```java
+for (int i = 0; i < n; i++) {
+    for (int j = 1; j < m; j++) {
+        arr[i][j] += arr[i][j - 1];
+    }
+}
+```
+
+### **Step 2: Compute Column-wise Prefix Sum**
+```java
+for (int j = 0; j < m; j++) {
+    for (int i = 1; i < n; i++) {
+        arr[i][j] += arr[i - 1][j];
+    }
+}
+```
+
+### **Formula for Prefix Sum Calculation**
+
+prefix[i][j] = arr[i][j] + prefix[i-1][j] + prefix[i][j-1] - prefix[i-1][j-1]
+
+- **`arr[i][j]`** → Original element
+- **`prefix[i-1][j]`** → Sum of elements above
+- **`prefix[i][j-1]`** → Sum of elements to the left
+- **`prefix[i-1][j-1]`** → Subtracting the extra part (double counted)
+
+---
+## **3. Code for Constructing Prefix Sum Matrix**
+```java
+public static int[][] computePrefixSum(int[][] arr, int n, int m) {
+    int[][] prefix = new int[n][m];
+
+    // Step 1: Compute Row-wise Prefix Sum
+    for (int i = 0; i < n; i++) {
+        for (int j = 1; j < m; j++) {
+            arr[i][j] += arr[i][j - 1];
+        }
+    }
+
+    // Step 2: Compute Column-wise Prefix Sum
+    for (int j = 0; j < m; j++) {
+        for (int i = 1; i < n; i++) {
+            arr[i][j] += arr[i - 1][j];
+        }
+    }
+    return arr;  // The original array now becomes the prefix sum matrix
+}
+```
+---
+## **4. Query Sum of Any Submatrix in O(1)**
+To find the sum of a submatrix from `(r1, c1)` to `(r2, c2)`, we use:
+
+\[
+\text{Sum} = \text{prefix}[r2][c2] - \text{prefix}[r1-1][c2] - \text{prefix}[r2][c1-1] + \text{prefix}[r1-1][c1-1]
+\]
+
+### **Code for Finding Submatrix Sum**
+```java
+public static int findSubMatSum(int[][] prefix, int r1, int c1, int r2, int c2) {
+    int sum = prefix[r2][c2];
+
+    if (r1 > 0) sum -= prefix[r1 - 1][c2];  // Remove upper part
+    if (c1 > 0) sum -= prefix[r2][c1 - 1];  // Remove left part
+    if (r1 > 0 && c1 > 0) sum += prefix[r1 - 1][c1 - 1]; // Add back the overlapping region
+
+    return sum;
+}
+```
+---
+## **5. Example Problem: Find Maximum Sum Submatrix**
+### **Brute Force Approach (`O(n^4)`)**
+```java
+public static int maxSumRectangle(int[][] arr, int n, int m) {
+    int[][] prefix = computePrefixSum(arr, n, m);
+    int maxSum = Integer.MIN_VALUE;
+
+    for (int r1 = 0; r1 < n; r1++) {
+        for (int c1 = 0; c1 < m; c1++) {
+            for (int r2 = r1; r2 < n; r2++) {
+                for (int c2 = c1; c2 < m; c2++) {
+                    maxSum = Math.max(maxSum, findSubMatSum(prefix, r1, c1, r2, c2));
+                }
+            }
+        }
+    }
+    return maxSum;
+}
+```
+---
+## **6. Optimized Approach Using Kadane’s Algorithm (`O(n^3)`)**
+💡 **Idea:**
+1. Fix **two row indices** (`r1` to `r2`).
+2. Use a **temporary 1D array (`temp[]`)** to store column-wise sums.
+3. Apply **Kadane’s Algorithm** on `temp[]` to get the max sum subarray.
+
+```java
+public static int maxSumRectangle(int[][] arr, int n, int m) {
+    int maxSum = Integer.MIN_VALUE;
+
+    for (int r1 = 0; r1 < n; r1++) {
+        int[] temp = new int[m];  // Temporary array for column-wise sum
+
+        for (int r2 = r1; r2 < n; r2++) {
+            // Compute sum of elements between row r1 to r2
+            for (int col = 0; col < m; col++) {
+                temp[col] += arr[r2][col];
+            }
+            
+            // Apply Kadane’s Algorithm
+            maxSum = Math.max(maxSum, kadane(temp));
+        }
+    }
+    return maxSum;
+}
+
+private static int kadane(int[] arr) {
+    int maxSum = Integer.MIN_VALUE, currSum = 0;
+    for (int num : arr) {
+        currSum += num;
+        maxSum = Math.max(maxSum, currSum);
+        if (currSum < 0) currSum = 0;
+    }
+    return maxSum;
+}
+```
+---
+## **7. Other Problems Using Prefix Sum on a Matrix**
+- Count the number of submatrices that sum to a target
+- Largest square submatrix with sum ≤ `k`
+- Number of submatrices with an even sum
+
+---
+
+
+

@@ -284,6 +284,61 @@ O(n): where n is the length of string s. The sliding window ensures we only pass
 **Space Complexity:**
 O(k): where k is the number of unique characters in p and s, since we are using hash maps to track frequencies.
 
+### Alternative approach 
+```java
+class Solution {
+    public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> result = new ArrayList<>();
+        if (s.length() < p.length()) return result;
+
+        int[] pHash = new int[26];  // Frequency array for string `p`
+        int[] sHash = new int[26];  // Frequency array for current window in `s`
+
+        // Fill the pHash and initial window in sHash
+        for (int i = 0; i < p.length(); i++) {
+            pHash[p.charAt(i) - 'a']++;
+            sHash[s.charAt(i) - 'a']++;
+        }
+
+        // Compare the first window
+        if (match(pHash, sHash)) {
+            result.add(0);
+        }
+
+        // Sliding the window across string `s`
+        int left = 0;
+        for (int right = p.length(); right < s.length(); right++) {
+            // Include the next character in the window
+            sHash[s.charAt(right) - 'a']++;
+
+            // Exclude the character going out of the window
+            sHash[s.charAt(left) - 'a']--;
+            left++;
+
+            // Compare window's frequency map with p's map
+            if (match(pHash, sHash)) {
+                result.add(left);  // `left` is the starting index of the current window
+            }
+        }
+
+        return result;
+    }
+
+    // Helper function to check if two frequency arrays are identical
+    private boolean match(int[] pHash, int[] sHash) {
+        for (int i = 0; i < 26; i++) {
+            if (pHash[i] != sHash[i]) return false;
+        }
+        return true;
+    }
+}
+```
+**Time Complexity:**
+O(n): where n is the length of string s. The sliding window ensures we only pass through s once, and each update (adding/removing characters) is O(1) due to hash map operations.<br>
+**Space Complexity:**
+O(k): where k is the number of unique characters in p and s, since we are using hash maps to track frequencies.
+
+
 Question Bank
 A slight variation using the template for Sliding Window that can be used in the following problems that follow a similar pattern:
 
@@ -552,77 +607,427 @@ O(k) where k is the number of distinct characters in the string, as we store the
 
 ## 1004. Max Consecutive Ones III
 Leetcode Link z: [1004. Max Consecutive Ones III](https://leetcode.com/problems/max-consecutive-ones-iii/description/)
+### **Intuition**
+The problem **"Longest Subarray of 1s After at Most K Flips"** can be solved using a **Sliding Window (Two Pointer) approach**.
 
-Given a binary array nums and an integer k, return the maximum number of consecutive 1's in the array if you can flip at most k 0's.
+1. **Expanding the Window:**
+ - We iterate through the array with a `windowEnd` pointer.
+ - If we encounter a `0`, we **increase** the `zero_flipped` count.
 
+2. **Shrinking the Window:**
+ - If `zero_flipped > k`, it means we have flipped more than allowed `k` zeros.
+ - To **balance it**, we start shrinking the window from `windowStart` until `zero_flipped` becomes ≤ `k`.
+
+3. **Calculating the Maximum Length:**
+ - After adjusting the window, we update `maximum_len` with the current window size.
+
+---
+
+### **Time and Space Complexity**
+#### **Time Complexity: `O(N)`**
+- We traverse the `nums` array exactly **once** with `windowEnd`.
+- `windowStart` also moves from left to right but only once.
+- **Total iterations:** Each element is processed **at most twice** (once when expanding, once when shrinking).
+- Hence, the complexity is **O(N)**.
+
+#### **Space Complexity: `O(1)`**
+- We use only a few integer variables (`windowStart`, `zero_flipped`, `maximum_len`).
+- No extra space proportional to the input size.
+- **Space complexity is O(1).**
+
+---
+
+### **Fixed Code (Correcting `Integer.MIN_VALUE`)**
 ```java
-Example 1:
+class Solution {
+    public int longestOnes(int[] nums, int k) {
+        int windowStart = 0, maximum_len = 0;
+        int zero_flipped = 0;
+        
+        for (int windowEnd = 0; windowEnd < nums.length; windowEnd++) {
+            if (nums[windowEnd] == 0) {
+                zero_flipped++;
+            }
 
-Input: nums = [1,1,1,0,0,0,1,1,1,1,0], k = 2
-Output: 6
-Explanation: [1,1,1,0,0,1,1,1,1,1,1]
-Bolded numbers were flipped from 0 to 1. The longest subarray is underlined.
-Example 2:
+            while (zero_flipped > k) {  // Shrinking the window if flips exceed k
+                if (nums[windowStart] == 0) {
+                    zero_flipped--;
+                }
+                windowStart++;
+            }
 
-Input: nums = [0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1], k = 3
-Output: 10
-Explanation: [0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1]
-Bolded numbers were flipped from 0 to 1. The longest subarray is underlined.
+            // Update the maximum length of subarray found
+            maximum_len = Math.max(maximum_len, windowEnd - windowStart + 1);
+        }
+        
+        return maximum_len;
+    }
+}
+```
+---
+
+### **Example Walkthrough**
+#### **Example 1:**
+```java
+Input: nums = [1,1,0,0,1,1,1,0,1,1,0,1], k = 2
+Output: 8
+```
+**Step-by-step execution:**
+```
+Window expands:  [1,1,0,0,1,1,1,0]   →  Flipped 2 zeros → max_len = 8
 ```
 
-well iterate through the array to add one number at a time in the window. Well also keep track of the maximum number of repeating 1's in the current window (lets call it maxOnesCount). So at any time, we know that we can have a window with 1's repeating maxOnesCount time, so we should try to replace the remaining 0's. If we have more than K remaining 0's, we should shrink the window as we are not allowed to replace more than K 0's.
-
+#### **Example 2:**
 ```java
-public class Solution {
+Input: nums = [0,0,1,1,0,0,1,1,1,0,1,1,0], k = 3
+Output: 10
+```
+**Step-by-step execution:**
+```
+Window expands:  [1,1,0,0,1,1,1,0,1,1]  →  Flipped 3 zeros → max_len = 10
+```
 
-    public static int lengthOfLongestSubstring(int[] arr, int k) {
-        int windowStart = 0;
-        int maxLength = 0;
-        int maxOnesCount = 0;
+---
+### **Problem: Longest Repeating Character Replacement**
+You are given a string `s` and an integer `k`. You can replace at most `k` characters in `s` to make the longest contiguous substring with repeating characters.
 
-        // Try to extend the range [windowStart, windowEnd]
-        for (int windowEnd = 0; windowEnd < arr.length; windowEnd++) {
-            // Count the number of 1's in the window
-            if (arr[windowEnd] == 1) {
-                maxOnesCount++;
+#### **Example**
+```java
+Input: s = "AABABBA", k = 1
+Output: 4
+Explanation: Replace the 'B' at index 2 with 'A' to get "AAAABBA". The longest substring of repeating characters is "AAAA".
+```
+
+---
+
+## **Intuition**
+We need to find the longest contiguous substring where we can change at most `k` characters to make all characters the same.
+
+### **Sliding Window Approach**
+1. We use a **two-pointer sliding window** with `windowStart` and `windowEnd` to track a valid substring.
+2. We maintain a **frequency map** to store character counts in the current window.
+3. The **main condition** for a valid window:  
+   \[
+   \text{window size} - \text{max frequency character count} \leq k
+   \]
+ - If this condition holds, we can make the entire window uniform by changing at most `k` characters.
+ - If not, we **shrink** the window from `windowStart` to maintain validity.
+4. The **goal** is to maximize the window size.
+
+---
+
+## **Time and Space Complexity**
+- **Time Complexity:** `O(N)`
+ - Each character is processed at most **twice** (once when expanding and once when shrinking).
+- **Space Complexity:** `O(1)`
+ - Uses a fixed-sized frequency array of length `26` (constant).
+
+---
+
+## **Java Implementation**
+```java
+class Solution {
+    public int characterReplacement(String s, int k) {
+        int[] freq = new int[26];  // Frequency map for characters
+        int windowStart = 0, maxCount = 0, maxLength = 0;
+        
+        for (int windowEnd = 0; windowEnd < s.length(); windowEnd++) {
+            char endChar = s.charAt(windowEnd);
+            freq[endChar - 'A']++;
+            maxCount = Math.max(maxCount, freq[endChar - 'A']);
+            
+            // If window size - max frequency char > k, shrink the window
+            while ((windowEnd - windowStart + 1) - maxCount > k) {
+                char startChar = s.charAt(windowStart);
+                freq[startChar - 'A']--;
+                windowStart++;
             }
-
-            // Current window size is from windowStart to windowEnd.
-            // Check if the number of 0's in this window exceeds 'k'
-            if (windowEnd - windowStart + 1 - maxOnesCount > k) {
-                if (arr[windowStart] == 1) {
-                    maxOnesCount--;
-                }
-                windowStart++; // Shrink the window
-            }
-
-            // Calculate the maximum length of the window
+            
             maxLength = Math.max(maxLength, windowEnd - windowStart + 1);
         }
-
+        
         return maxLength;
+    }
+}
+```
+
+---
+
+## **Dry Run Example**
+### **Input:** `"AABABBA"`, `k = 1`
+```
+Window expands: "AAB" (valid, max_len = 3)
+Window expands: "AABA" (valid, max_len = 4)
+Window expands: "AABAB" (valid, max_len = 5)
+Window shrinks: "ABAB" (still valid, max_len = 4)
+Final max_len = 4
+```
+
+---
+
+### **Intuition Behind the Approach**
+The problem requires us to count **all vowel substrings** in a given string `word`. A **vowel substring** is a contiguous substring that contains **only vowels (`a, e, i, o, u`)** and includes **all five vowels at least once**.
+
+To solve this efficiently, we use the **sliding window technique with a HashMap**.
+
+#### **Observations**
+1. **If a character is not a vowel**, then it **cannot be part of any valid substring**. Thus, we must reset the window when encountering a non-vowel.
+2. **Tracking the last occurrence of each vowel** helps in quickly determining how far back a substring can be valid.
+3. If we have **all five vowels in the current window**, the number of valid substrings that end at index `i` is determined by the **earliest occurrence** of any vowel in the window.
+
+---
+
+### **Approach**
+1. **Use a HashMap (`map`)** to store the **last occurrence index** of each vowel.
+2. **Iterate through the string (`i` loop)**:
+    - If `word[i]` is a vowel, store its **index** in the HashMap.
+    - If it’s a consonant, reset the HashMap and move `j` (start of window).
+3. **Once all five vowels are found**, the number of valid substrings ending at `i` is determined by the smallest index in `map`.
+    - The number of valid substrings is `min(map.values()) - j`.
+
+---
+
+### **Code Implementation (Without Streams)**
+```java
+import java.util.*;
+
+class Solution {
+    public int countVowelSubstrings(String word) {
+        int ans = 0;
+        String vowels = "aeiou";
+        Map<Integer, Integer> map = new HashMap<>();
+        
+        int j = -1; // The last position where a consonant was found
+
+        for (int i = 0; i < word.length(); i++) {
+            int found = vowels.indexOf(word.charAt(i));
+            
+            if (found == -1) { 
+                // Reset everything if a consonant is found
+                map.clear();
+                j = i;  
+            } else {
+                // Store the latest index of this vowel
+                map.put(found, i);
+            }
+
+            // If all 5 vowels are present at least once, calculate valid substrings
+            if (map.size() == 5) {
+                int minIndex = Integer.MAX_VALUE;
+                for (int index : map.values()) {
+                    minIndex = Math.min(minIndex, index);
+                }
+                ans += (minIndex - j);
+            }
+        }
+        return ans;
     }
 
     public static void main(String[] args) {
-        // Test case 1
-        int[] arr1 = {0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1};
-        int k1 = 2;
-        System.out.println("Length of longest substring (Test 1): " + lengthOfLongestSubstring(arr1, k1));  // Output: 6
-
-        // Test case 2
-        int[] arr2 = {0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1};
-        int k2 = 3;
-        System.out.println("Length of longest substring (Test 2): " + lengthOfLongestSubstring(arr2, k2));  // Output: 9
+        Solution sol = new Solution();
+        System.out.println(sol.countVowelSubstrings("aeiouu")); // Output: 7
+        System.out.println(sol.countVowelSubstrings("unicornarihan")); // Output: 2
     }
 }
-
 ```
 
-**Time Complexity:**
-O(n), where n is the number of elements in the input array. Each element is processed at most twice (once when added to the window and once when removed).
+---
 
-**Space Complexity:**
-O(1), since we're using a few extra variables (e.g., maxOnesCount, maxLength) but no additional data structures that grow with input size.
+### **Dry Run Example**
+#### **Example Input:** `"aeiouu"`
+```
+word = "aeiouu"
+```
+| `i` | `word[i]` | `map` (last seen indexes) | `j` (last consonant) | `min(map.values())` | `ans` (total)  |
+|----|-----------|-------------------------|-------------------|-----------------|----------------|
+| 0  | `a`       | `{0}`                    | `-1`              | —               | 0              |
+| 1  | `e`       | `{0, 1}`                  | `-1`              | —               | 0              |
+| 2  | `i`       | `{0, 1, 2}`               | `-1`              | —               | 0              |
+| 3  | `o`       | `{0, 1, 2, 3}`            | `-1`              | —               | 0              |
+| 4  | `u`       | `{0, 1, 2, 3, 4}`         | `-1`              | `0`             | `0 - (-1) = 1` |
+| 5  | `u`       | `{0, 1, 2, 3, 5}`         | `-1`              | `0`             | `0 - (-1) = 1` |
+
+**Final Output:** `2`
+
+---
+
+### **Complexity Analysis**
+- **Time Complexity:** `O(N)`
+    - We iterate through the string **once** (`O(N)`).
+    - The HashMap operations (`put` and `get`) run in **O(1)** time.
+    - Finding the **minimum value** in the HashMap takes **O(5) = O(1)** since it only contains five entries.
+    - Overall, the complexity is **O(N)**.
+
+- **Space Complexity:** `O(1)`
+    - We use a HashMap of **at most 5 elements (for vowels)**, which is **constant space**.
+
+---
+
+### **Problem Statement:**
+**"Count Substrings With At Least K-Frequency Characters"**  
+Given a string `s`, return the number of substrings where at least one character appears **at least `K` times**.
+
+---
+
+### **Intuition Behind the Approach:**
+We use a **sliding window** approach to efficiently count substrings that satisfy the condition.
+
+1. **Expand the window (`windowEnd`)** by adding characters and updating their frequencies in a HashMap.
+2. **Shrink the window (`windowStart`)** when any character’s frequency becomes at least `K`.
+    - When `charFreq[ch] >= k`, all substrings ending at `windowEnd` and starting from `windowStart` contribute to the count.
+    - We add `(n - windowEnd)` to the count because all substrings `s[windowStart : windowEnd]`, `s[windowStart + 1 : windowEnd]`, ..., `s[windowEnd : windowEnd]` are valid.
+3. **Remove characters from the left (`windowStart`)** until the condition breaks, ensuring we count all possible substrings efficiently.
+
+---
+**Java Implementation**
+
+```java
+class Solution {
+    public int numberOfSubstrings(String s, int k) {
+        if(s == null)
+            return 0;
+        int n = s.length();
+        Map<Character , Integer> charFreq = new HashMap<>();
+        int windowStart = 0;
+        int count = 0;
+        for(int windowEnd = 0 ; windowEnd < s.length() ; windowEnd++){
+            char ch = s.charAt(windowEnd);
+            charFreq.put(ch , charFreq.getOrDefault(ch , 0) + 1);
+            while(charFreq.getOrDefault(ch , 0) >= k){
+                count += n - windowEnd;
+                char leftChar = s.charAt(windowStart);
+                charFreq.put(leftChar , charFreq.get(leftChar) - 1);
+                if(charFreq.get(leftChar) == 0)
+                    charFreq.remove(leftChar);
+                windowStart++;
+
+            }
+        }
+        return count;
+
+        
+    }
+}
+```
+
+### **Dry Run Example**
+Let’s consider the input:  
+`s = "aabcb"` and `k = 2`
+
+#### **Step-by-step Execution:**
+
+| `windowStart` | `windowEnd` | Current Window | Character Frequencies | Valid Substrings |
+|--------------|-------------|----------------|-----------------------|------------------|
+| 0           | 0           | "a"            | `{a:1}`               | 0                |
+| 0           | 1           | "aa"           | `{a:2}`               | `5 - 1 = 4` (Valid: "aa", "aab", "aabc", "aabcb") |
+| 1           | 2           | "ab"           | `{a:1, b:1}`          | 0 |
+| 1           | 3           | "abc"          | `{a:1, b:1, c:1}`     | 0 |
+| 1           | 4           | "abcb"         | `{a:1, b:2, c:1}`     | `5 - 4 = 1` (Valid: "bcb") |
+
+Total substrings = **5**.
+
+---
+
+### **Time & Space Complexity**
+
+#### **Time Complexity:**
+- Each character is processed at most **twice** (once when added, once when removed).
+- **O(N)** in total.
+
+#### **Space Complexity:**
+- The frequency map stores at most **26** characters.
+- **O(1)** (since 26 is a constant).
+
+---
+## **239. Sliding Window Maximum**
+### **Intuition**
+The problem requires us to find the maximum element in every **contiguous subarray (window) of size `k`** in an array. A brute force approach would involve iterating through each window and finding the maximum, but this would be inefficient (O(N*K)). Instead, we can efficiently maintain the maximum using a **monotonic decreasing deque (double-ended queue - `Deque`)**.
+
+### **Efficient Approach (Using Deque)**
+- We maintain a **Deque** (double-ended queue) to store indices of elements in a way that ensures:
+    1. The **front** of the deque (`dq.peek()`) always holds the index of the **maximum** element in the current window.
+    2. The elements in the deque are **in decreasing order** of values (i.e., from largest to smallest).
+    3. We remove elements **from the back** of the deque if they are **smaller than or equal to** the current element (since they can never be a maximum in any future window).
+    4. If the element at the **front** of the deque is **out of the current window**, we remove it.
+
+---
+
+### **Dry Run**
+#### **Example**
+```plaintext
+nums = [1, 3, -1, -3, 5, 3, 6, 7], k = 3
+```
+**Step 1: Process first `k` elements (First Window [1, 3, -1])**
+1. `dq = [1]` → `nums[1] = 3` is maximum.
+2. `Result = []`
+
+**Step 2: Process Remaining Elements**
+| i | nums[i] | Deque (Indices) | Deque (Values) | Max in Window |
+|---|--------|----------------|---------------|---------------|
+| 3 | -3     | [1, 2, 3]      | [3, -1, -3]  | 3             |
+| 4 | 5      | [4]            | [5]          | 5             |
+| 5 | 3      | [4, 5]         | [5, 3]       | 5             |
+| 6 | 6      | [6]            | [6]          | 6             |
+| 7 | 7      | [7]            | [7]          | 7             |
+
+---
+
+### **Code Implementation (Java)**
+```java
+import java.util.*;
+
+class Solution {
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        int n = nums.length;
+        int[] result = new int[n - k + 1];
+
+        Deque<Integer> dq = new ArrayDeque<>();
+
+        // Process first K elements
+        for (int i = 0; i < k; i++) {
+            while (!dq.isEmpty() && nums[dq.peekLast()] <= nums[i]) {
+                dq.pollLast(); // Remove smaller elements
+            }
+            dq.offerLast(i);
+        }
+
+        // Process for all windows
+        int j = 0;
+        for (int i = k; i < n; i++) {
+            result[j++] = nums[dq.peek()]; // Store max of current window
+            
+            // Remove out-of-window elements
+            while (!dq.isEmpty() && dq.peek() < i - k + 1) {
+                dq.pollFirst();
+            }
+
+            // Remove smaller elements from back
+            while (!dq.isEmpty() && nums[dq.peekLast()] <= nums[i]) {
+                dq.pollLast();
+            }
+            dq.offerLast(i);
+        }
+
+        // Store max for the last window
+        result[j] = nums[dq.peek()];
+        return result;
+    }
+}
+```
+
+---
+
+### **Time and Space Complexity Analysis**
+#### **Time Complexity: O(N)**
+- Each element is **pushed and popped at most once** from the deque.
+- Thus, the operations per element are **O(1)** on average.
+- So, the total complexity is **O(N)**.
+
+#### **Space Complexity: O(K)**
+- We store **indices of elements** in a deque, with at most **K** elements at a time.
+- The `result` array of size **O(N-K+1)** is required to store the output.
+
+
 
 Questions bank
 

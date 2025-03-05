@@ -396,3 +396,70 @@ O(1): Only constant space is used for the pointers.
 Follow-up question using Middle of Linked List
 - [Delete the Middle Node of a Linked List](https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/description/)
 
+
+To solve the problem of merging two linked lists by removing nodes from the `a`-th to the `b`-th position in `list1` and inserting `list2` in their place, you can follow these steps:
+
+1. **Identify the Node Before Position `a` (`prevA`):**
+    - Traverse `list1` to find the node just before the `a`-th position.
+
+2. **Identify the Node at Position `b` (`nodeB`):**
+    - Continue traversing from `prevA` to reach the `b`-th node.
+
+3. **Connect `prevA` to the Head of `list2`:**
+    - Link the node before position `a` to the head of `list2`.
+
+4. **Find the Tail of `list2`:**
+    - Traverse `list2` to find its last node.
+
+5. **Connect the Tail of `list2` to the Node After `b` (`nodeB.next`):**
+    - Link the last node of `list2` to the node following `nodeB` in `list1`.
+
+6. **Return the Modified `list1`:**
+    - The head of `list1` now points to the merged list.
+
+Here's the Java implementation of the above approach:
+
+```java
+class Solution {
+    public ListNode mergeInBetween(ListNode list1, int a, int b, ListNode list2) {
+        ListNode prevA = list1;
+        // Traverse to the node just before position 'a'
+        for (int i = 0; i < a - 1; i++) {
+            prevA = prevA.next;
+        }
+
+        ListNode nodeB = prevA.next;
+        // Traverse to the 'b' node
+        for (int i = 0; i < b - a + 1; i++) {
+            nodeB = nodeB.next;
+        }
+
+        // Connect prevA to the head of list2
+        prevA.next = list2;
+
+        // Traverse to the end of list2
+        ListNode tailList2 = list2;
+        while (tailList2.next != null) {
+            tailList2 = tailList2.next;
+        }
+
+        // Connect the end of list2 to the node after 'b'
+        tailList2.next = nodeB;
+
+        return list1;
+    }
+}
+```
+
+**Explanation:**
+
+- **Traversing to `prevA`:** The loop `for (int i = 0; i < a - 1; i++)` moves the `prevA` pointer to the node just before the `a`-th node.
+
+- **Traversing to `nodeB`:** The loop `for (int i = 0; i < b - a + 1; i++)` moves the `nodeB` pointer to the `b`-th node.
+
+- **Connecting Nodes:** After identifying the relevant nodes, the code connects `prevA` to the head of `list2` and the tail of `list2` to `nodeB.next`, effectively merging the lists as specified.
+
+This approach ensures that the nodes from position `a` to `b` in `list1` are replaced by `list2`, resulting in the desired merged linked list.
+
+For a visual explanation and further insights into this problem, you might find the following video helpful:
+ 

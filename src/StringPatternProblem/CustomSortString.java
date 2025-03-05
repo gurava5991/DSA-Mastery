@@ -13,6 +13,7 @@ public class CustomSortString {
     }
 
     private static String customSortString(String order,String s) {
+        Map<Character , Character> map = Map.of();
         Map<Character,Integer> frequency  = new HashMap<>();
         for(char ch : s.toCharArray())
                 frequency.put(ch,frequency.getOrDefault(ch , 0) + 1);
