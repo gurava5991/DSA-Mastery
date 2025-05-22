@@ -1,4 +1,4 @@
-# Sorting Algorithms & Important pattern
+# Sorting Algorithms 
 ### Introduction of Sorting Algorithms 
 Sorting algorithms are fundamental to computer science and are used to arrange elements of a list or array in a specific order, such as ascending or descending. These algorithms form the backbone of many computational tasks, enhancing the efficiency of searching, organizing, and optimizing data.
 
@@ -295,7 +295,7 @@ mergeSort():recursively divides the array into two halves and sorts each half us
   * Right Half: mid + 1 to high
 * Where mid = (low + high) / 2.
 Recursive Division:
-```java
+```Html
 mergeSort(arr, low, mid);
 mergeSort(arr, mid + 1, high);
 ```
@@ -324,14 +324,16 @@ Copy Back to Original Array:<br>
 Transfer the elements from the temporary array back into the original array from index low to high.<br>
 
 ```java
+package SortingAlgorithms;
+
 import java.util.Arrays;
 
 public class MergeSort {
     public static void main(String[] args) {
         int[] arr = {5, 3, 1, 9, 8, 2, 4, 7};
-        System.out.println("Before sorting :"+Arrays.toString(arr));
+        System.out.println("Before sorting : "+Arrays.toString(arr));
         mergeSort(arr, 0 , arr.length - 1);
-        System.out.println("After sorting :"+Arrays.toString(arr));
+        System.out.println("After sorting : "+Arrays.toString(arr));
     }
 
     private static void mergeSort(int[] arr, int low, int high) {
@@ -343,13 +345,10 @@ public class MergeSort {
         }
     }
     public static void merge(int[] arr , int low , int mid , int high){
-        //setting up the Auxilary space arrys
-        int n1 = mid - low + 1 , n2 = high - mid;
-        int[] left = new int[n1];
-        int[] right = new int[n2];
-        for(int i = 0 ; i < n1 ; i++) left[i] = arr[i + low];
-        for(int j = 0 ; j < n2 ; j++) right[j] = arr[j + mid + 1];
-
+        //setting up the Auxilary space array
+        int[] left = Arrays.copyOfRange(arr , low , mid + 1);
+        int[] right = Arrays.copyOfRange(arr , mid + 1 , high + 1);
+        int n1 = left.length , n2 = right.length;
         //standard merge sort algorithms
         int i = 0 , j = 0 , k = low;
         while(i < n1 && j < n2){
@@ -365,7 +364,6 @@ public class MergeSort {
     }
 
 }
-
 ```
 **Time Complexity: O(nlogn).** At each step, we divide the whole array, which takes logn steps, and we assume n steps are taken to sort the array. So, the overall time complexity is nlogn.
 
@@ -608,99 +606,177 @@ This algorithm follows two simple steps repeatedly:
 1. Pick a pivot and place it in its correct position in the sorted array.
 2. Move smaller elements (i.e., smaller than the pivot) to the left of the pivot and larger ones to the right.
 
+
+**Lomuto’s Partition Algorithm (unstable algorithm)**
+Lomutopartition(arr[], lo, hi)
+
+    pivot = arr[hi]
+    i = lo -1    // place for swapping
+    for j := lo to hi – 1 do
+        if arr[j] <= pivot then
+            swap arr[i] with arr[j]
+            i = i + 1
+    swap arr[i] with arr[hi]
+    return i
+
+
+QuickSort(arr[], l,  r)
+
+If r > l
+1. Find the partition point of the array  
+m =Lomutopartition(a,l,r)
+2. Call Quicksort for less than partition point   
+Call Quicksort(arr, l, m-1)
+3. Call Quicksort for greater than the partition point
+Call Quicksort(arr, m+1, r)
+
 ```java
-import java.util.*;
+// Java program to demonstrate the Lomuto partition
+// in quick sort
 
-class Solution {
-    // Function to partition the array
-    public int partition(int[] arr, int low, int high) {
+iimport java.util.*;
 
-        // Choosing the first element as pivot
-        int pivot = arr[low];
-        // Starting index for left subarray
-        int i = low;
-        // Starting index for right subarray
-        int j = high;
+public class QuickSort {
 
-        while (i < j) {
-            /*  Move i to the right until we find an
-                element greater than the pivot  */
-            while (arr[i] <= pivot && i <= high - 1) {
-                i++;
-            }
-            /*  Move j to the left until we find an
-                element smaller than the pivot  */
-            while (arr[j] > pivot && j >= low + 1) {
-                j--;
-            }
-            /*  Swap elements at i and j if i is still
-                less than j  */
-            if (i < j) {
-                int temp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = temp;
-            }
-        }
-
-        // Pivot placed in correct position
-        int temp = arr[low];
-        arr[low] = arr[j];
-        arr[j] = temp;
-        return j;
-    }
-
-    // Helper Function to perform the recursive quick sort
-    public void quickSortHelper(int[] arr, int low, int high) {
-        /*  Base case: If the array has one or no
-            elements, it's already sorted  */
-        if (low < high) {
-            // Get the partition index
-            int pIndex = partition(arr, low, high);
-            // Sort the left subarray
-            quickSortHelper(arr, low, pIndex - 1);
-            // Sort the right subarray
-            quickSortHelper(arr, pIndex + 1, high);
-        }
-    }
-
-    // Function to perform quick sort on given array
-    public int[] quickSort(int[] nums) {
-        // Get the size of array
-        int n = nums.length;
-        
-        // Perform quick sort
-        quickSortHelper(nums, 0, n - 1);
-        
-        // Return sorted array
-        return nums;
-    }
-}
-
-public class Main {
     public static void main(String[] args) {
-        int[] arr = {4, 6, 2, 5, 7, 9, 1, 3};
-        int n = arr.length;
+        int[] array = { 4, 5, 1, 2, 4, 5, 6 };
+        System.out.println("Before sorting the array: " + Arrays.toString(array));
+        quickSort(array, 0, array.length - 1);
+        System.out.println("After sorting the array: " + Arrays.toString(array));
+    }
 
-        System.out.println("Before Sorting Array:");
-        for (int i = 0; i < n; i++) {
-            System.out.print(arr[i] + " ");
+    private static void quickSort(int[] array, int start, int end) {
+        if (start < end) {
+            int pivotIndex = lomutoPartition(array, start, end);
+            quickSort(array, start, pivotIndex - 1);    // Left subarray
+            quickSort(array, pivotIndex + 1, end);      // Right subarray
         }
-        System.out.println();
+    }
 
-        // Create an instance of Solution class
-        Solution solution = new Solution();
+    private static int lomutoPartition(int[] array, int start, int end) {
+        int pivot = array[end];             // Pivot is the last element
+        int smallerIndex = start - 1;       // Points to the last element smaller than pivot
 
-        // Function call to sort the array using quick sort
-        int[] sortedArr = solution.quickSort(arr);
-
-        System.out.println("After Sorting Array:");
-        for (int i = 0; i < n; i++) {
-            System.out.print(sortedArr[i] + " ");
+        for (int current = start; current < end; current++) {
+            if (array[current] < pivot) {
+                smallerIndex++;
+                swap(array, smallerIndex, current);
+            }
         }
-        System.out.println();
+
+        // Place pivot in its correct sorted position
+        swap(array, smallerIndex + 1, end);
+        return smallerIndex + 1;
+    }
+
+    private static void swap(int[] array, int i, int j) {
+        if (i != j) {
+            int temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
     }
 }
+
 ```
+Hoare's Partition
+
+Hoare’s Partition Scheme works by initializing two indexes that start at two ends, the two indexes move toward each other until an inversion is (A smaller value on the left side and a greater value on the right side) found. When an inversion is found, two values are swapped and the process is repeated.
+
+```text
+Hoare's Partition 
+
+Hoare’s Partition Scheme works by initializing two indexes that start at two ends, the two indexes move toward each other until an inversion is (A smaller value on the left side and a greater value on the right side) found. When an inversion is found, two values are swapped and the process is repeated.
+
+Algorithm: 
+
+Hoarepartition(arr[], lo, hi)
+
+   pivot = arr[lo]
+   i = lo - 1  // Initialize left index
+   j = hi + 1  // Initialize right index
+
+   // Find a value in left side greater
+   // than pivot
+   do
+      i = i + 1
+   while arr[i] < pivot
+
+   // Find a value in right side smaller
+   // than pivot
+   do
+      j--;
+   while (arr[j] > pivot);
+
+   if i >= j then 
+      return j
+
+   swap arr[i] with arr[j]
+
+
+   
+QuickSort(arr[], l,  r)
+
+If r > l
+     1. Find the partition point of the array  
+              m =Hoarepartition(a,l,r) 
+     2. Call Quicksort for less than partition point   
+             Call Quicksort(arr, l, m)
+     3. Call Quicksort for greater than the partition point 
+             Call Quicksort(arr, m+1, r)
+```
+
+```java
+//Java program to demonstrate the Hoare partition
+package SortingAlgorithms;
+import java.util.Arrays;
+
+public class QuickSort {
+    public static void main(String[] args) {
+        int[] array = { 4, 5, 1, 2, 4, 5, 6 };
+        System.out.println("Before sorting the array: " + Arrays.toString(array));
+        quickSort(array, 0, array.length - 1);
+        System.out.println("After sorting the array: " + Arrays.toString(array));
+    }
+
+    private static void quickSort(int[] array, int start, int end) {
+        if (start < end) {
+            int pivotIndex = partition(array, start, end);
+            quickSort(array, start, pivotIndex - 1);   // Left subarray
+            quickSort(array, pivotIndex + 1, end);     // Right subarray
+        }
+    }
+
+    private static int partition(int[] array, int start, int end) {
+        int pivot = array[start];
+        int left = start;
+        int right = end;
+
+        while (left < right) {
+            while (left < right && array[left] <= pivot) {
+                left++;
+            }
+            while (array[right] > pivot) {
+                right--;
+            }
+            if (left < right) {
+                swap(array, left, right);
+            }
+        }
+
+        swap(array, start, right); // Place pivot in its correct position
+        return right;
+    }
+
+    private static void swap(int[] array, int i, int j) {
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
+
+```
+
 * [Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/description/)
 ```
 Given an integer array nums and an integer k, return the kth largest element in the array.
@@ -730,7 +806,7 @@ we can use modified version of quick sort algorithm here.
 ```java
 class Solution {
     public int findKthLargest(int[] nums, int k) {
-        k = nums.length - k;//since we are sorting array in an  ascending order we could take len - k
+        k = nums.length - k; //since we are sorting array in an  ascending order we could take len - k
         int low = 0 , high = nums.length - 1;
         while(low <= high){
             int pi = partition(nums , low , high);
@@ -745,40 +821,29 @@ class Solution {
         return -1;
 
     }
-    public int partition(int[] arr, int low, int high) {
-
-        // Choosing the first element as pivot
-        int pivot = arr[low];
-        // Starting index for left subarray
-        int i = low;
-        // Starting index for right subarray
-        int j = high;
-
-        while (i < j) {
-            /*  Move i to the right until we find an
-                element greater than the pivot  */
-            while (arr[i] <= pivot && i <= high - 1) {
-                i++;
+    public int partition(int[] array, int start, int end) {
+        int pivot = array[start];
+        int left = start;
+        int right = end;
+        while(left < right){
+            while(left < right && array[left] <= pivot){
+                left++;
             }
-            /*  Move j to the left until we find an
-                element smaller than the pivot  */
-            while (arr[j] > pivot && j >= low + 1) {
-                j--;
+            while(array[right] > pivot){
+                right--;
             }
-            /*  Swap elements at i and j if i is still
-                less than j  */
-            if (i < j) {
-                int temp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = temp;
+            if(left < right){
+                swap(array , left , right);
             }
         }
+        swap(array , start , right);
+        return right;
 
-        // Pivot placed in correct position
-        int temp = arr[low];
-        arr[low] = arr[j];
-        arr[j] = temp;
-        return j;
+    }
+    public void swap(int[] array , int first , int second){
+        int temp = array[first];
+        array[first] = array[second];
+        array[second] = temp;
     }
 }
 ```
@@ -789,55 +854,183 @@ Problems on Quick sort Algorithm :
 - [Kth Smallest](https://www.geeksforgeeks.org/problems/kth-smallest-element5635/1)
 - [sort the colors](https://leetcode.com/problems/sort-colors/description/)
 
-# Non-comparison-based sorting algorithm
-## Counting Sort Algorithm
+# **🔢 Counting Sort & Radix Sort: Intuition, Approach, Code, Dry Run, Time Complexity & Space Complexity**
 
-Counting Sort is a non-comparison-based sorting algorithm that works best when the range of elements is small and known in advance. It uses a counting mechanism to sort elements in linear time, making it efficient in specific scenarios.
+## **📌 1. Counting Sort**
+### **👉 Intuition**
+Counting Sort is a **non-comparison-based sorting algorithm** that works by counting the occurrences of each unique element in the array and using that information to place the elements in their correct positions.
 
-**Simple Steps**<br>
-**Identify the Range:**<br>
-Find the minimum and maximum elements in the array to determine the range of values.<br>
-**Count Occurrences:**<br>
-Create a count array of size (max - min + 1) to store the frequency of each element in the input array.<br>
-**Compute Prefix Sums**:<br>
-Modify the count array to hold cumulative counts (prefix sums), which indicate the position of each element in the sorted array.
-**Place Elements in Output Array:**<br>
-Use the cumulative counts to place each element in the correct position in a separate output array.<br>
-Decrease the count of the placed element to handle duplicates correctly.<br>
-**Copy Back to Original Array:**<br>
-Copy the output array back to the original array to complete the sorting.<br>
+Unlike other sorting algorithms like **Merge Sort** or **Quick Sort**, which use **comparisons**, Counting Sort works by **grouping elements based on their values**. This makes it very efficient for sorting numbers within a known range.
+
+---
+
+### **👉 Approach**
+1. **Find the maximum element (`max`)** in the array to determine the size of the counting array.
+2. **Create a frequency array** (`count[]`) of size `max + 1` to store the count of each number.
+3. **Compute prefix sum** in `count[]`, which will help us determine the correct position of each element.
+4. **Build the output array** using the prefix sum information.
+5. **Copy the sorted output array back to the original array.**
+
+---
+
+### **📌 Code: Counting Sort**
 ```java
-import java.util.Arrays;
+class CountingSort {
+    public static void countingSort(int[] arr) {
+        int n = arr.length;
+        int max = 0;
 
-public class CountingSort {
-    public static void main(String[] args) {
-        int[] nums = {2,9,7,4,1,8,4};
-        int max = getMax(nums);
+        // Step 1: Find the maximum value
+        for (int num : arr) {
+            max = Math.max(max, num);
+        }
+
+        // Step 2: Create a frequency array (count array)
         int[] count = new int[max + 1];
-        for(int val : nums)
-            count[val]++;
-        //cumulative sum
-        for(int i = 1 ; i < count.length; i++){
+
+        for (int num : arr) {
+            count[num]++;
+        }
+
+        // Step 3: Compute prefix sum in count array
+        for (int i = 1; i <= max; i++) {
             count[i] += count[i - 1];
         }
-        int[] output = new int[nums.length];
-        for(int i = nums.length - 1 ; i >= 0 ; i--){
-            output[--count[nums[i]]] = nums[i];
-        }
-        System.out.println(Arrays.toString(output));
 
+        // Step 4: Build the output array
+        int[] output = new int[n];
+        for (int i = n - 1; i >= 0; i--) {
+            output[count[arr[i]] - 1] = arr[i];
+            count[arr[i]]--; // Decrease count for stability
+        }
+
+        // Step 5: Copy the sorted elements back to the original array
+        System.arraycopy(output, 0, arr, 0, n);
     }
 
-    //get the max element from nums array
-    private static int getMax(int[] nums) {
-        int max = nums[0];
-        for (int i = 1; i < nums.length; i++){
-            max = Math.max(max,nums[i]);
-        }
-        return max;
+    public static void main(String[] args) {
+        int[] arr = {4, 2, 2, 8, 3, 3, 1};
+        countingSort(arr);
+        System.out.println(Arrays.toString(arr));
     }
 }
 ```
+
+---
+
+### **📌 Dry Run**
+#### **Input:** `{4, 2, 2, 8, 3, 3, 1}`
+#### **Step-by-Step Execution**
+| Step  | Action |
+|--------|------------------------------------------------------|
+| **1**  | Find `max = 8` |
+| **2**  | Build `count[]`: `{0, 1, 2, 2, 1, 0, 0, 0, 1}` |
+| **3**  | Compute prefix sum in `count[]`: `{0, 1, 3, 5, 6, 6, 6, 6, 7}` |
+| **4**  | Build `output[]`: `{1, 2, 2, 3, 3, 4, 8}` |
+| **5**  | Copy sorted output back to `arr[]`: `{1, 2, 2, 3, 3, 4, 8}` |
+
+---
+
+### **📌 Time & Space Complexity**
+| **Complexity** | **Counting Sort** |
+|--------------|----------------|
+| **Time Complexity** | **O(N + K)** (N = size of array, K = max value) |
+| **Space Complexity** | **O(N + K)** (for `count[]` and `output[]`) |
+
+---
+
+## **📌 2. Radix Sort**
+### **👉 Intuition**
+Radix Sort is a **non-comparison-based sorting algorithm** that works by sorting numbers digit by digit, starting from the **least significant digit (LSD)** to the **most significant digit (MSD)**.
+
+It **uses Counting Sort as a subroutine** to sort based on each digit position, which makes it stable and efficient for sorting large numbers.
+
+---
+
+### **👉 Approach**
+1. **Find the maximum element (`max`)** to determine the number of digits.
+2. **Sort based on each digit** (ones, tens, hundreds, etc.) using **Counting Sort**.
+3. **Repeat the process** until all digit places are processed.
+
+---
+
+### **📌 Code: Radix Sort**
+```java
+class RadixSort {
+    static void radixSort(int arr[], int n) {
+        int maxNumber = arr[0];
+
+        // Step 1: Find maximum number to determine number of digits
+        for (int i = 1; i < n; i++) {
+            maxNumber = Math.max(maxNumber, arr[i]);
+        }
+
+        // Step 2: Apply Counting Sort for every digit (1s, 10s, 100s, ...)
+        for (int exp = 1; maxNumber / exp > 0; exp *= 10) {
+            countingSort(arr, exp);
+        }
+    }
+
+    public static void countingSort(int[] arr, int exp) {
+        int[] count = new int[10]; // Digits (0-9)
+        int n = arr.length;
+        int[] output = new int[n];
+
+        // Count occurrences of digits at the current place value
+        for (int val : arr) {
+            count[(val / exp) % 10]++;
+        }
+
+        // Compute prefix sum
+        for (int i = 1; i < 10; i++) {
+            count[i] += count[i - 1];
+        }
+
+        // Build the output array (Right to Left to maintain stability)
+        for (int i = n - 1; i >= 0; i--) {
+            int digit = (arr[i] / exp) % 10;
+            output[count[digit] - 1] = arr[i]; 
+            count[digit]--; 
+        }
+
+        // Copy sorted elements back to the original array
+        System.arraycopy(output, 0, arr, 0, n);
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {170, 45, 75, 90, 802, 24, 2, 66};
+        radixSort(arr, arr.length);
+        System.out.println(Arrays.toString(arr));
+    }
+}
+```
+
+---
+
+### **📌 Dry Run**
+#### **Input:** `{170, 45, 75, 90, 802, 24, 2, 66}`
+**Pass 1 (exp = 1, sorting by units place):**
+- Sorted `{170, 90, 802, 2, 24, 45, 75, 66}`
+- (Using Counting Sort on last digit)
+
+**Pass 2 (exp = 10, sorting by tens place):**
+- Sorted `{802, 2, 24, 45, 66, 170, 75, 90}`
+
+**Pass 3 (exp = 100, sorting by hundreds place):**
+- Sorted `{2, 24, 45, 66, 75, 90, 170, 802}`
+
+**Final Output:** `{2, 24, 45, 66, 75, 90, 170, 802}` ✅
+
+---
+
+### **📌 Time & Space Complexity**
+| **Complexity** | **Radix Sort** |
+|--------------|----------------|
+| **Time Complexity** | **O((N + K) * log₁₀(max))** |
+| **Space Complexity** | **O(N + K)** |
+
+
+---
 ## Sort Functions on C++ and Java
 **Sorting Functions in Java**
 

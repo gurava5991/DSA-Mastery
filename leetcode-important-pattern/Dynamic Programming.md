@@ -43,7 +43,7 @@ class Solution {
 - **Time Complexity:** O(2ⁿ) (Exponential) ❌
 - **Space Complexity:** O(N) (Recursive stack space)
 
-🔴 **Issue:** Overlapping subproblems cause redundant calculations.
+ **Issue:** Overlapping subproblems cause redundant calculations.
 
 ### **Recursion Tree for F(4):**
 ```
@@ -586,7 +586,7 @@ Given a set of pairs `(a, b)`, where `a < b`, find the **longest chain** where:
 
 ---
 
-Great choice! The **Largest Divisible Subset (Leetcode 368)** is a variation of the **Longest Increasing Subsequence (LIS)** problem.
+ The **Largest Divisible Subset (Leetcode 368)** is a variation of the **Longest Increasing Subsequence (LIS)** problem.
 
 ---
 
@@ -967,18 +967,229 @@ public class LCSSpaceOptimized {
     }
 }
 ```
+These problems are all based on **Longest Common Subsequence (LCS)**, and understanding LCS deeply will help solve them efficiently. Let’s go through their **mathematical logic, intuition, and relation to LCS**.
 
 ---
 
-## **Final Comparison**
-| Approach       | Time Complexity | Space Complexity | Notes |
-|---------------|---------------|----------------|-------|
-| Recursion      | O(2^N)        | O(N) (stack)  | Exponential, inefficient |
-| Memoization   | O(N × M)       | O(N × M)      | Efficient, avoids recomputation |
-| Tabulation    | O(N × M)       | O(N × M)      | Bottom-up approach |
-| Space Optimized | O(N × M)     | O(M)          | Uses only two 1D arrays |
+## **1. Print Longest Common Subsequence (LCS)**
+### **Mathematical Logic & Intuition**
+- Given two strings `s1` and `s2`, the **LCS** is the longest subsequence (not necessarily contiguous) common to both.
+- The **LCS DP table (`dp[i][j]`)** stores:
+    - `dp[i][j] = LCS length of s1[0..i-1] and s2[0..j-1]`
+    - **Transition:**
+        - If `s1[i-1] == s2[j-1]`, then include it:  
+          \[
+          dp[i][j] = 1 + dp[i-1][j-1]
+          \]
+        - Else, skip one character from either `s1` or `s2`:  
+          \[
+          dp[i][j] = \max(dp[i-1][j], dp[i][j-1])
+          \]
+
+### **Extracting LCS**
+- **Backtrack** through `dp[i][j]` to reconstruct the LCS.
 
 ---
+
+## **2. Longest Common Substring**
+### **Mathematical Logic & Intuition**
+- Unlike LCS, a **substring is contiguous**.
+- Define `dp[i][j]`:
+    - If `s1[i-1] == s2[j-1]`, then:
+      \[
+      dp[i][j] = 1 + dp[i-1][j-1]
+      \]
+    - Else, reset `dp[i][j] = 0` (substring must be contiguous).
+- Track the **maximum value in `dp[i][j]`**.
+
+---
+
+## **3. Longest Palindromic Subsequence (LPS)**
+### **Mathematical Logic & Intuition**
+- **LPS is the LCS of a string and its reverse.**
+- Given `s`, define `rev_s = reverse(s)`, then:
+  \[
+  LPS(s) = LCS(s, rev_s)
+  \]
+- This works because a palindrome is a sequence that **reads the same forward and backward**.
+
+---
+
+## **4. Minimum Insertions to Make a String Palindrome**
+### **Mathematical Logic & Intuition**
+- We need to **insert the minimum number of characters** to make `s` a palindrome.
+- The **minimum insertions needed** is:
+  \[
+  \text{Insertions} = \text{Length}(s) - \text{LPS}(s)
+  \]
+- **Why?**
+    - `LPS(s)` is the **longest part that’s already a palindrome**.
+    - The remaining characters need to be inserted to make `s` a full palindrome.
+
+---
+
+## **5. Minimum Insertions/Deletions to Convert String**
+### **Mathematical Logic & Intuition**
+- Given `s1` and `s2`, we need to make them identical using the **minimum insertions and deletions**.
+- The **LCS(s1, s2) gives the longest common part**.
+- **Deletions = Length of `s1` - LCS(s1, s2)**
+- **Insertions = Length of `s2` - LCS(s1, s2)**
+- This works because:
+    - **Characters not in LCS must be deleted from `s1`**.
+    - **Characters missing from LCS must be inserted to `s2`**.
+
+---
+
+## **6. Shortest Common Supersequence (SCS)**
+### **Mathematical Logic & Intuition**
+- A **supersequence** contains both `s1` and `s2` as subsequences.
+- The shortest one is found by:
+  \[
+  \text{SCS length} = \text{Length}(s1) + \text{Length}(s2) - \text{LCS}(s1, s2)
+  \]
+- **Why?**
+    - The sum of `s1` and `s2` gives a sequence where we count **all characters**.
+    - **LCS is counted twice**, so subtract it once.
+
+These three problems are classic **dynamic programming (DP) problems** related to **string transformations and matching**. Let’s break them down with their **intuition, mathematical logic, and approach**.
+
+---
+
+## **1. Distinct Subsequences**
+### **Problem Statement**
+Given two strings `s1` (source) and `s2` (target), find **how many distinct subsequences of `s1` are equal to `s2`**.
+
+### **Example**
+#### **Input:**
+`s1 = "rabbbit"`, `s2 = "rabbit"`
+#### **Output:**
+`3`
+#### **Explanation:**
+Three subsequences of `"rabbbit"` match `"rabbit"`:
+- `"rabb**b**it"`
+- `"rab**b**bit"`
+- `"rabbb**it**"`
+
+### **Mathematical Logic**
+Let `dp[i][j]` represent the number of ways `s1[0..i-1]` can form `s2[0..j-1]`.
+
+#### **Recurrence Relation:**
+1. **If characters match (`s1[i-1] == s2[j-1]`):**
+    - We have **two choices**:
+        - Use this character in `s2` → `dp[i-1][j-1]`
+        - Ignore this character → `dp[i-1][j]`
+          \[
+          dp[i][j] = dp[i-1][j-1] + dp[i-1][j]
+          \]
+2. **If characters don’t match (`s1[i-1] ≠ s2[j-1]`):**
+    - We can **only ignore the current character** in `s1`.
+      \[
+      dp[i][j] = dp[i-1][j]
+      \]
+3. **Base Case:**
+    - `dp[i][0] = 1` (empty `s2` can always be formed)
+    - `dp[0][j] = 0` (if `s2` isn't empty but `s1` is, it's impossible)
+
+### **Time Complexity**
+- `O(N * M)`, where `N` is `s1.length()` and `M` is `s2.length()`.
+
+---
+
+## **2. Edit Distance (Levenshtein Distance)**
+### **Problem Statement**
+Find the **minimum number of operations** (Insertions, Deletions, or Replacements) required to convert `s1` into `s2`.
+
+### **Example**
+#### **Input:**
+`s1 = "horse"`, `s2 = "ros"`
+#### **Output:**
+`3`
+#### **Explanation:**
+1. `"horse"` → `"orse"` (delete 'h')
+2. `"orse"` → `"rse"` (delete 'o')
+3. `"rse"` → `"ros"` (replace 's' with 'o')
+
+### **Mathematical Logic**
+Let `dp[i][j]` represent the **minimum edits needed** to convert `s1[0..i-1]` to `s2[0..j-1]`.
+
+#### **Recurrence Relation:**
+1. **If characters match (`s1[i-1] == s2[j-1]`)**, no operation needed:
+   \[
+   dp[i][j] = dp[i-1][j-1]
+   \]
+2. **If characters don’t match (`s1[i-1] ≠ s2[j-1]`)**, we have three choices:
+    - **Insert (`s2[j-1]`)** → `dp[i][j-1] + 1`
+    - **Delete (`s1[i-1]`)** → `dp[i-1][j] + 1`
+    - **Replace (`s1[i-1]` with `s2[j-1]`)** → `dp[i-1][j-1] + 1`
+      \[
+      dp[i][j] = 1 + \min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])
+      \]
+3. **Base Case:**
+    - `dp[i][0] = i` (deleting all characters)
+    - `dp[0][j] = j` (inserting all characters)
+
+### **Time Complexity**
+- `O(N * M)`, where `N = s1.length()` and `M = s2.length()`.
+
+---
+
+## **3. Wildcard Matching**
+### **Problem Statement**
+Given two strings:
+- `s1` (input string)
+- `s2` (pattern with `?` and `*` wildcards)  
+  Find whether `s1` **matches** `s2`.
+
+### **Wildcard Rules**
+- `?` matches **exactly one character**.
+- `*` matches **any sequence of characters (including empty sequence)**.
+
+### **Example**
+#### **Input:**
+`s1 = "adceb"`, `s2 = "*a*b"`
+#### **Output:**
+`true`
+#### **Explanation:**
+- `*` → Matches any sequence (`"adc"`)
+- `a` → Matches `a`
+- `*` → Matches any sequence (`"ce"`)
+- `b` → Matches `b`
+
+### **Mathematical Logic**
+Let `dp[i][j]` represent whether `s1[0..i-1]` matches `s2[0..j-1]`.
+
+#### **Recurrence Relation:**
+1. **If characters match (`s1[i-1] == s2[j-1]` OR `s2[j-1] == '?'`)**:
+   \[
+   dp[i][j] = dp[i-1][j-1]
+   \]
+2. **If `s2[j-1] == '*'` (wildcard case)**:
+    - `*` matches **zero** characters → `dp[i][j-1]`
+    - `*` matches **one or more** characters → `dp[i-1][j]`
+      \[
+      dp[i][j] = dp[i-1][j] \quad \text{or} \quad dp[i][j-1]
+      \]
+3. **Base Case:**
+    - `dp[0][0] = true` (empty matches empty)
+    - `dp[i][0] = false` (non-empty string can't match empty pattern)
+    - `dp[0][j]` → `true` only if `s2[0..j-1]` is **all `*`**.
+
+### **Time Complexity**
+- `O(N * M)`, where `N = s1.length()` and `M = s2.length()`.
+
+---
+
+## **Summary of DP Formulas**
+| Problem | Transition Formula |
+|---------|--------------------|
+| **Distinct Subsequences** | `dp[i][j] = dp[i-1][j-1] + dp[i-1][j]` (if `s1[i-1] == s2[j-1]`) |
+| **Edit Distance** | `dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])` |
+| **Wildcard Matching** | `dp[i][j] = dp[i-1][j] || dp[i][j-1]` (if `s2[j-1] == '*'`) |
+
+---
+
+## **DP On Subsequences**
+
 
 
 

@@ -10,6 +10,7 @@ public class CombinationSum {
         List<Integer> ds =  new ArrayList<>();
         findAllCombinations(0,arr,target,allCombinations,ds);
         System.out.println(allCombinations);
+
     }
 
     private static void findAllCombinations(int index, int[] arr, int target, List<List<Integer>> allCombinations, List<Integer> ds) {

@@ -1,5 +1,7 @@
 package backtracking;
 
+import java.util.Set;
+
 public class WordSearch {
     public static void main(String[] args) {
         char[][] board = new char[][]{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}};
@@ -19,6 +21,7 @@ public class WordSearch {
             }
         }
         return false;
+
     }
 
     private static boolean existPathHelper(int row, int col, char[][] board, String word, int index) {

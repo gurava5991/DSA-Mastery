@@ -232,8 +232,7 @@ Space complexity : O(1).
 ## Binary Search On 2D Array 
 - [Search in a Row-Column sorted matrix](https://leetcode.com/problems/search-a-2d-matrix-ii/description/)
 
-```java
-Given a 2D integer matrix mat[][] of size n x m, where every row and column is sorted in increasing order and a number x, the task is to find whether element x is present in the matrix.
+```Bash
 
 Examples:
 
@@ -344,7 +343,7 @@ class Solution {
 
 - [Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/description/)
 
-```java
+```bash
 You are given an m x n integer matrix matrix with the following two properties:
 
 Each row is sorted in non-decreasing order.
@@ -395,6 +394,154 @@ class Solution {
 
 **Time Complexity:** O(log(n * m)) due to the binary search on the matrix elements<br>
 **Space Complexity**: O(1) as only a constant amount of space is used for variables
+
+### 378. Kth Smallest Element in a Sorted Matrix
+```
+Given an n x n matrix where each of the rows and columns is sorted in ascending order, return the kth smallest element in the matrix.
+
+Note that it is the kth smallest element in the sorted order, not the kth distinct element.
+
+You must find a solution with a memory complexity better than O(n2).
+
+ 
+
+Example 1:
+
+Input: matrix = [[1,5,9],[10,11,13],[12,13,15]], k = 8
+Output: 13
+Explanation: The elements in the matrix are [1,5,9,10,11,12,13,13,15], and the 8th smallest number is 13
+Example 2:
+
+Input: matrix = [[-5]], k = 1
+Output: -5
+ 
+
+Constraints:
+
+n == matrix.length == matrix[i].length
+1 <= n <= 300
+-109 <= matrix[i][j] <= 109
+All the rows and columns of matrix are guaranteed to be sorted in non-decreasing order.
+1 <= k <= n2
+```
+Since the array is sorted in row wise and column wise we could use binary search for improved time complexity
+* We will take l as matrix[0][0] and h as matrix[m-1][m-1] where m are the rows in matrix
+* Then find mid and count the no of elements < mid in each row
+* if count < k means we have to find the greater mid so that count can become equal to k
+* else h =mid;
+* return l
+
+```java
+
+class Solution {
+    public int kthSmallest(int[][] matrix, int k) {
+        int n = matrix.length;
+        int low = matrix[0][0], high = matrix[n - 1][n - 1];
+        int ans = 0;
+        while(low <= high){
+            int mid = low + (high - low) / 2;
+            if(countSmallerEqual(matrix , mid) >= k){
+                ans = mid ;
+                high = mid - 1;
+            }
+            else{
+                low = mid + 1;
+            }
+        }
+        return ans;   
+    }
+    public int countSmallerEqual(int[][] matrix , int x){
+        int n = matrix.length , count = 0;
+        int row = 0 , col = n - 1;
+
+        // Traverse from the top-right corner
+        while (row < n && col >= 0) {
+            if (matrix[row][col] <= x) {
+                // If current element is less than or equal to x,
+                // all elements in this row up to the current column are <= x
+                count += (col + 1);
+                row++;
+            } else {
+                // Move left in the matrix
+                col--;
+            }
+        }
+
+        return count;
+    }
+}
+
+```
+Time Complexity : o(nlogn)
+
+Space Complexity : O(1)
+
+## **668. Kth Smallest Number in Multiplication Table**
+
+```bash
+Nearly everyone has used the Multiplication Table. The multiplication table of size m x n is an integer matrix mat where mat[i][j] == i * j (1-indexed).
+
+Given three integers m, n, and k, return the kth smallest element in the m x n multiplication table.
+
+ 
+
+Example 1:
+
+Input: m = 3, n = 3, k = 5
+Output: 3
+Explanation: The 5th smallest number is 3.
+Example 2:  
+Input: m = 2, n = 3, k = 6
+Output: 6
+Explanation: The 6th smallest number is 6.  
+
+Constraints:
+
+1 <= m, n <= 3 * 104
+1 <= k <= m * n
+
+```
+
+Approach : we used the Binary search answer pattern here
+steps :
+
+1. set low = 1 and high = m*n
+2. while(low <= high)
+3. mid = low + (high - low)/2
+4. if(lessthanK(mid , m , n) < k) low = mid + 1;
+5. else high = mid - 1
+6. return low
+
+```java
+class Solution {
+    public int findKthNumber(int m, int n, int k) {
+        int low = 1 , high = m * n;
+        while(low <= high){
+            int mid = low + (high - low)/2;
+            if(lessthanK(mid , m , n) < k){
+                low = mid + 1;
+            }
+            else
+                high = mid - 1;
+        }
+        return low;
+        
+    }
+    private int lessthanK(int mid , int m , int n){
+        int count = 0;
+        for(int i = 1 ; i <= m ; i++){
+            count += Math.min(mid / i , n);
+        }
+        return count;
+    }
+}
+```
+
+---
+Time Complexity : O(log(m*n))<br>
+Space Complexity : O(1)
+
+---
 
 
 

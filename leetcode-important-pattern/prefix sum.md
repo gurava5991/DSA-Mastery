@@ -497,6 +497,7 @@ class Solution {
 
 **Space Complexity** : O(n), due to the space used by the HashMap to store prefix sums.
 
+
 **Important Questions Using Above Pattern:**
 - [Longest Sub-Array with Sum K](https://www.geeksforgeeks.org/problems/longest-sub-array-with-sum-k0809/1)
 - [Subarrays with equal 1s and 0s](https://www.geeksforgeeks.org/problems/count-subarrays-with-equal-number-of-1s-and-0s-1587115620/1)
@@ -641,21 +642,7 @@ Input: word = "1010", m = 10
 Output: [0,1,0,1]
 Explanation: There are only 2 prefixes that are divisible by 10: "10", and "1010".
 ```
-P
-i
-​
-=(P
-i−1
-​
-×10+digit at index i)
 
-P
-i
-​
-%m=((P
-i−1
-​
-%m)×10+digit at index i)%m
 
 This can be simplified to:
 curr_mod=(prev_mod×10+digit)%m

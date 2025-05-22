@@ -1,5 +1,7 @@
 package array.TwoPointersPatterns;
 
+import java.util.Arrays;
+
 public class CountBS {
     public static void main(String[] args) {
         System.out.println(countBinarySubstrings("00110011"));
@@ -39,5 +41,6 @@ public class CountBS {
         }
 
         return ans;
+
     }
 }

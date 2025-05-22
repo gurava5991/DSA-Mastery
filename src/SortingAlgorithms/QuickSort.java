@@ -1,50 +1,46 @@
 package SortingAlgorithms;
-
-
 import java.util.Arrays;
 
 public class QuickSort {
     public static void main(String[] args) {
-        int[] arr = { 4, 5, 1, 2, 4, 5, 6 };
-        System.out.println("Before sorting the arrays : " + Arrays.toString(arr));
-        quickSort(arr , 0 , arr.length - 1);
-        System.out.println("After sorting the arrays : " + Arrays.toString(arr));
+        int[] array = { 4, 5, 1, 2, 4, 5, 6 };
+        System.out.println("Before sorting the array: " + Arrays.toString(array));
+        quickSort(array, 0, array.length - 1);
+        System.out.println("After sorting the array: " + Arrays.toString(array));
     }
-    private static void quickSort(int[] arr , int low , int high){
-        if(low < high){
-            int pi = partition(arr , low , high);
-            quickSort(arr , low , pi - 1);
-            quickSort(arr , pi + 1 , high);
+
+    private static void quickSort(int[] array, int start, int end) {
+        if (start < end) {
+            int pivotIndex = partition(array, start, end);
+            quickSort(array, start, pivotIndex - 1);   // Left subarray
+            quickSort(array, pivotIndex + 1, end);     // Right subarray
         }
     }
 
-    private static int partition(int[] arr, int low, int high) {
-        int pivot = arr[low];
-        int i = low + 1;
-        int j = high;
+    private static int partition(int[] array, int start, int end) {
+        int pivot = array[start];
+        int left = start;
+        int right = end;
 
-        while (i < j) {
-            // Find the first element greater than or equal to pivot from the left
-            while (i < j && arr[i] <= pivot) {
-                i++;
+        while (left < right) {
+            while (left < right && array[left] <= pivot) {
+                left++;
             }
-            // Find the first element less than or equal to pivot from the right
-            while (arr[j] > pivot) {
-                j--;
+            while (array[right] > pivot) {
+                right--;
             }
-            // Swap elements at i and j if they have not crossed
-            if (i < j) {
-                int temp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = temp;
+            if (left < right) {
+                swap(array, left, right);
             }
         }
-        System.out.println(Arrays.toString(arr));
-        // Swap pivot with the element at j
-        arr[low] = arr[j];
-        arr[j] = pivot;
-        return j;
+
+        swap(array, start, right); // Place pivot in its correct position
+        return right;
     }
 
+    private static void swap(int[] array, int i, int j) {
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
 }
-

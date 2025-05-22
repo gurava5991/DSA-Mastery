@@ -5,11 +5,11 @@ import java.util.Arrays;
 
 public class Knapsack01 {
     public static void main(String[] args) {
-        int wt[] = {1, 2, 4, 5};
-        int val[] = {5, 4, 8, 6};
-        int W = 5;
-        int res = knapscak01UsingMemoization(wt,val,W);
-        System.out.println(res);
+        int wt[] = {4, 5, 1};
+        int val[] = {1, 2, 3};
+        int W = 4;
+        //int res = knapscak01UsingMemoization(wt,val,W);
+        //System.out.println(res);
         int ans = knapscak01UsingTabulation(wt,val,W);
         System.out.println(ans);
     }
@@ -47,7 +47,7 @@ public class Knapsack01 {
         for(int i = 1 ; i < val.length ; i++){
             for(int cap = 0 ; cap <= w ; cap++){
                 int notTaken = dp[i - 1] [cap];
-                int taken = Integer.MIN_VALUE;
+                int taken = 0;
                 if(cap >= wt[i])
                     //dp[i - 1][cap - wt[i]
                     taken = val[i] + dp[i - 1][cap - wt[i]];

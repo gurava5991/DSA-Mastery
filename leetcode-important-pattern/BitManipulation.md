@@ -1,16 +1,16 @@
-## **Bit Manipulation in Java**
+## **Bit Manipulation**
 
 Bit manipulation is a technique that uses bitwise operators to perform operations at the bit level. It is often used for efficient computations, optimization, and problem-solving in competitive programming.
 
-### **1. Bitwise Operators in Java**
-| Operator | Name | Example | Explanation |
-|----------|------|---------|-------------|
-| `&` | AND | `5 & 3 = 1` | Bitwise AND of 5 (`101`) and 3 (`011`) results in `001` (1 in decimal). |
-| `|` | OR | `5 | 3 = 7` | Bitwise OR of 5 (`101`) and 3 (`011`) results in `111` (7 in decimal). |
-| `^` | XOR | `5 ^ 3 = 6` | Bitwise XOR of 5 (`101`) and 3 (`011`) results in `110` (6 in decimal). |
-| `~` | NOT | `~5 = -6` | Bitwise NOT of 5 (`101`) flips bits to `...11111010` (Two's complement of -6). |
-| `<<` | Left Shift | `5 << 1 = 10` | Shifts bits of 5 (`101`) left by 1 position, making it `1010` (10 in decimal). |
-| `>>` | Right Shift | `5 >> 1 = 2` | Shifts bits of 5 (`101`) right by 1 position, making it `010` (2 in decimal). |
+### **1. Bitwise Operators **
+| Operator | Name                 | Example | Explanation |
+|------|----------------------|---------|-------------|
+| `&` | AND                  | `5 & 3 = 1` | Bitwise AND of 5 (`101`) and 3 (`011`) results in `001` (1 in decimal). |
+| `| `                    | OR | `5 | 3 = 7` | Bitwise OR of 5 (`101`) and 3 (`011`) results in `111` (7 in decimal). |
+| `^` | XOR                  | `5 ^ 3 = 6` | Bitwise XOR of 5 (`101`) and 3 (`011`) results in `110` (6 in decimal). |
+| `~` | NOT                  | `~5 = -6` | Bitwise NOT of 5 (`101`) flips bits to `...11111010` (Two's complement of -6). |
+| `<<` | Left Shift           | `5 << 1 = 10` | Shifts bits of 5 (`101`) left by 1 position, making it `1010` (10 in decimal). |
+| `>>` | Right Shift          | `5 >> 1 = 2` | Shifts bits of 5 (`101`) right by 1 position, making it `010` (2 in decimal). |
 | `>>>` | Unsigned Right Shift | `-5 >>> 1` | Similar to `>>`, but fills 0 from the left (used for unsigned numbers). |
 
 ---
@@ -311,38 +311,23 @@ XOR (`^`) is a powerful bitwise operator widely used in problem-solving for opti
 ---
 
 ### **1. Basic Properties of XOR**
-1. **Self-Cancellation:**  
-   \[
-   a \oplus a = 0
-   \]
+1. **Self-Cancellation:**
     - Any number XOR with itself results in 0.
     - Example: `5 ^ 5 = 0`
 
-2. **Identity Property:**  
-   \[
-   a \oplus 0 = a
-   \]
+2. **Identity Property:**
     - Any number XOR with 0 remains unchanged.
     - Example: `7 ^ 0 = 7`
 
-3. **Commutative Property:**  
-   \[
-   a \oplus b = b \oplus a
-   \]
+3. **Commutative Property:**
     - Order of operands does not matter.
     - Example: `3 ^ 5 = 5 ^ 3`
 
-4. **Associative Property:**  
-   \[
-   a \oplus (b \oplus c) = (a \oplus b) \oplus c
-   \]
+4. **Associative Property:**
     - Grouping does not change the result.
     - Example: `(2 ^ (3 ^ 4)) = ((2 ^ 3) ^ 4)`
 
-5. **Involution Property (Inverse):**  
-   \[
-   (a \oplus b) \oplus b = a
-   \]
+5. **Involution Property (Inverse):**
     - XORing twice with the same number restores the original.
     - Example: `(7 ^ 3) ^ 3 = 7`
 
