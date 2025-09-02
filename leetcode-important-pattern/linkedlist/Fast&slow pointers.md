@@ -459,7 +459,103 @@ class Solution {
 
 - **Connecting Nodes:** After identifying the relevant nodes, the code connects `prevA` to the head of `list2` and the tail of `list2` to `nodeB.next`, effectively merging the lists as specified.
 
-This approach ensures that the nodes from position `a` to `b` in `list1` are replaced by `list2`, resulting in the desired merged linked list.
 
-For a visual explanation and further insights into this problem, you might find the following video helpful:
- 
+Got it buddy 👍 — let’s properly frame the **question + algorithm** for you.
+
+---
+
+**LeetCode 1721 – Swapping Nodes in a Linked List**
+
+You are given the `head` of a linked list, and an integer `k`.
+
+* Swap the **k-th node from the beginning** with the **k-th node from the end** (the list is 1-indexed).
+* Return the **head of the modified list**.
+* If swapping is not possible (like when `k > length`), return the original list.
+
+---
+
+## 📌 Algorithm (without computing length separately)
+
+We use the **two-pointer technique**:
+
+1. **Find k-th node from start**
+
+   * Start from `head`, move forward `k-1` times.
+   * If list ends before reaching `k`, return `head` (invalid `k`).
+   * Save this node as `first`.
+
+2. **Find k-th node from end**
+
+   * Place another pointer `fast` at `first`.
+   * Place a pointer `second` at `head`.
+   * Move both `fast` and `second` forward until `fast` reaches the **last node**.
+   * Now, `second` points to the **k-th node from end**.
+
+3. **Swap values**
+
+   * If `first == second`, no need to swap.
+   * Otherwise, swap their `val` fields.
+
+4. **Return the head**.
+
+---
+
+## 📌 Dry Run Example
+
+Input:
+
+```
+head = [1,2,3,4,5], k = 2
+```
+
+* Step 1: `first = node(2)` (2nd from start)
+* Step 2: Move `fast` from `first(2)` till end, while moving `second` → it lands at `node(4)` (2nd from end).
+* Step 3: Swap values of `2` and `4`.
+
+Output:
+
+```
+[1,4,3,2,5]
+```
+
+---
+
+```java
+class Solution {
+    public ListNode swapNodes(ListNode head, int k) {
+        if (head == null || k <= 0) return head;
+
+        // Step 1: Move to kth node from start
+        ListNode first = head;
+        for (int i = 1; i < k; i++) {
+            first = first.next;
+            if (first == null) return head; // k > length
+        }
+
+        // Step 2: Find kth node from end
+        ListNode fast = first;
+        ListNode second = head;
+        while (fast.next != null) {
+            fast = fast.next;
+            second = second.next;
+        }
+
+        // Step 3: If same node, no swap
+        if (first == second) return head;
+
+        // Step 4: Swap values
+        int temp = first.val;
+        first.val = second.val;
+        second.val = temp;
+
+        return head;
+    }
+}
+
+```
+
+**Time Complexity:**<br>
+O(n): Both pointers will traverse the array linearly.<br>
+**Space Complexity:**<br>
+O(1): Only constant space is used for the pointers.
+

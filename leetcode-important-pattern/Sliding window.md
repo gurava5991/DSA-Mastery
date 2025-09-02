@@ -1056,3 +1056,85 @@ Below is a list of variable-sized sliding window problems for practice:
 19. [2024. Maximize the Confusion of an Exam](https://leetcode.com/problems/maximize-the-confusion-of-an-exam/)
 20. [2062. Count Vowel Substrings of a String](https://leetcode.com/problems/count-vowel-substrings-of-a-string/)
 
+
+
+
+
+### 🔍  **Sliding Window + At Most K Trick**
+
+Instead of directly counting substrings with **exactly `k` distinct characters**, we use this pattern:
+
+> ✅ `CountExactlyK(k) = CountAtMostK(k) - CountAtMostK(k - 1)`
+
+---
+
+## 🔁 Why does this work?
+
+* `CountAtMostK(k)` gives the number of substrings with **at most `k`** distinct characters.
+* `CountAtMostK(k - 1)` gives the number of substrings with **at most `k - 1`** distinct characters.
+* So subtracting these gives **exactly `k` distinct characters**.
+
+---
+
+## ✅ Step-by-step Plan:
+
+### Step 1: Write a helper function `countAtMostK(s, k)`
+
+This function uses a sliding window and keeps track of characters and their frequency to count valid substrings with **at most `k` distinct** characters.
+
+### Step 2: Use the formula:
+
+>  `CountExactlyK(k) = CountAtMostK(k) - CountAtMostK(k - 1)`
+
+---
+
+## 🔧 Implementation (Java-like):
+
+```java
+public int countSubstringsWithExactlyKDistinct(String s, int k) {
+    return countAtMostK(s, k) - countAtMostK(s, k - 1);
+}
+
+private int countAtMostK(String s, int k) {
+    int n = s.length();
+    int left = 0, right = 0, count = 0;
+    Map<Character, Integer> freq = new HashMap<>();
+
+    for (right = 0; right < n; right++) {
+        char ch = s.charAt(right);
+        freq.put(ch, freq.getOrDefault(ch, 0) + 1);
+
+        if (freq.size() > k) {
+            // shrink the window from the left
+            while (freq.size() > k) {
+                char leftChar = s.charAt(left);
+                freq.put(leftChar, freq.get(leftChar) - 1);
+                if (freq.get(leftChar) == 0) {
+                    freq.remove(leftChar);
+                }
+                left++;
+            }
+        }
+
+        // number of substrings ending at `right` with at most `k` distinct
+        count += right - left + 1;
+    }
+
+    return count;
+}
+```
+
+---
+
+## 📈 Time and Space Complexity:
+
+* **Time:** `O(n)`
+  Sliding window processes each character at most twice.
+* **Space:** `O(26)` or `O(n)` depending on the alphabet size used.
+
+---
+
+## Similar pattern problems List 
+
+[992. Subarrays with K Different Integers](https://leetcode.com/problems/subarrays-with-k-different-integers/description/)
+
