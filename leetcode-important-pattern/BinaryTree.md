@@ -365,6 +365,250 @@ class Solution {
     }
 }
 ```
+Perfect question buddy 🚀. Let’s go step by step and document **Morris Traversal** (for inorder & preorder).
+
+---
+
+# 🌳 Morris Traversal in Binary Tree
+
+### 🔎 What is Morris Traversal?
+
+Morris Traversal is a method to traverse a binary tree (inorder, preorder) **without recursion** and **without a stack**.
+👉 It uses **threaded binary tree** logic (temporary links to inorder predecessor).
+
+---
+
+### ✅ Why use Morris Traversal?
+
+* **Space Complexity**: `O(1)` (unlike recursion/stack which need `O(h)` where h = tree height).
+* **Time Complexity**: `O(n)` (each edge visited at most twice).
+* **Idea**:
+
+    1. If a node has no left child → visit it and move to right.
+    2. If a node has left child → find its **inorder predecessor** (rightmost node in its left subtree).
+
+        * If predecessor’s right is `null`, make it point to current node (temporary thread), move left.
+        * If predecessor’s right is current, remove the thread, visit current, move right.
+
+---
+
+### 📘 Inorder Morris Traversal (Left → Root → Right)
+
+```java
+class Node {
+    int data;
+    Node left, right;
+    Node(int data) {
+        this.data = data;
+    }
+}
+
+public class MorrisTraversal {
+
+    public void morrisInorder(Node root) {
+        Node curr = root;
+        
+        while (curr != null) {
+            if (curr.left == null) {
+                // Case 1: No left child, print & go right
+                System.out.print(curr.data + " ");
+                curr = curr.right;
+            } else {
+                // Case 2: Has left child, find inorder predecessor
+                Node pred = curr.left;
+                while (pred.right != null && pred.right != curr) {
+                    pred = pred.right;
+                }
+
+                if (pred.right == null) {
+                    // Make thread
+                    pred.right = curr;
+                    curr = curr.left;
+                } else {
+                    // Thread already exists -> remove and visit
+                    pred.right = null;
+                    System.out.print(curr.data + " ");
+                    curr = curr.right;
+                }
+            }
+        }
+    }
+}
+```
+
+---
+
+### 📘 Preorder Morris Traversal (Root → Left → Right)
+
+```java
+public void morrisPreorder(Node root) {
+    Node curr = root;
+
+    while (curr != null) {
+        if (curr.left == null) {
+            // No left child, print & move right
+            System.out.print(curr.data + " ");
+            curr = curr.right;
+        } else {
+            Node pred = curr.left;
+            while (pred.right != null && pred.right != curr) {
+                pred = pred.right;
+            }
+
+            if (pred.right == null) {
+                // Make thread, print before going left
+                System.out.print(curr.data + " ");
+                pred.right = curr;
+                curr = curr.left;
+            } else {
+                // Remove thread
+                pred.right = null;
+                curr = curr.right;
+            }
+        }
+    }
+}
+```
+
+
+
+---
+
+### ✨ Example Walkthrough
+
+For tree:
+
+```
+        4
+      /   \
+     2     6
+    / \   / \
+   1   3 5   7
+```
+
+🔹 **Inorder Morris** → `1 2 3 4 5 6 7`
+🔹 **Preorder Morris** → `4 2 1 3 6 5 7`
+
+---
+**Morris Inorder Traversal** we deal with the **predecessor** (rightmost node in the *left* subtree).
+But in **this Postorder trick**, we are traversing **Root → Right → Left** first (reverse of postorder), so here we use the **successor** (leftmost node in the *right* subtree).
+
+That’s why in your code it is written as:
+
+```java
+TreeNode predecessor = current.right;
+while (predecessor.left != null && predecessor.left != current) {
+    predecessor = predecessor.left;
+}
+```
+
+Here, `predecessor` is actually acting like a **successor** because we are working in the *right* subtree.
+It’s just terminology — the logic is symmetric.
+
+---
+
+## 🔑 Steps for Morris Postorder Traversal
+
+Let’s document it clearly:
+
+1. **Initialize** `current = root`.
+2. While `current != null`:
+
+    * If `current.right == null`:
+
+        * Add `current.key` to result.
+        * Move `current = current.left`.
+    * Else:
+
+        * Find the **successor** → leftmost node in `current.right`.
+        * If `successor.left == null`:
+
+            * Add `current.key` to result.
+            * Make a thread: `successor.left = current`.
+            * Move `current = current.right`.
+        * Else (thread exists):
+
+            * Break the thread (`successor.left = null`).
+            * Move `current = current.left`.
+3. At the end, **reverse the result list** because we got nodes in **Root → Right → Left** order.
+
+---
+
+## ✅ Java Code
+
+```java
+import java.util.*;
+
+class MorrisPostorderTraversal {
+
+    static class TreeNode {
+        int val;
+        TreeNode left, right;
+        TreeNode(int data) {
+            val = data;
+            left = right = null;
+        }
+    }
+
+    // Morris Postorder Traversal
+    public static List<Integer> postorder(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        TreeNode current = root;
+
+        while (current != null) {
+            if (current.right == null) {
+                // Visit node and move left
+                res.add(current.val);
+                current = current.left;
+            } else {
+                // Find successor (leftmost node of right subtree)
+                TreeNode successor = current.right;
+                while (successor.left != null && successor.left != current) {
+                    successor = successor.left;
+                }
+
+                if (successor.left == null) {
+                    // Thread not created yet
+                    res.add(current.val);
+                    successor.left = current;
+                    current = current.right;
+                } else {
+                    // Thread already exists, break it
+                    successor.left = null;
+                    current = current.left;
+                }
+            }
+        }
+
+        // Reverse Root→Right→Left to get Left→Right→Root
+        Collections.reverse(res);
+        return res;
+    }
+
+    // Driver Code
+    public static void main(String[] args) {
+        TreeNode root = new TreeNode(10);
+        root.left = new TreeNode(20);
+        root.right = new TreeNode(30);
+        root.right.left = new TreeNode(40);
+        root.right.right = new TreeNode(50);
+
+        List<Integer> ans = postorder(root);
+        System.out.println("Morris Postorder Traversal: " + ans);
+    }
+}
+```
+
+---
+
+### 🔍 Example Walkthrough (Tree: `10, 20, 30, 40, 50`)
+
+1. Traverse **Root → Right → Left**: `[10, 30, 50, 40, 20]`
+2. Reverse it: `[20, 40, 50, 30, 10]` ✅ (Postorder)
+
+---
+
+
 
 **Level Order Traversal(Queue Based Approach) :**
 

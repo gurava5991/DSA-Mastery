@@ -208,80 +208,87 @@ There are two approaches to implementing a stack using two queues:
 ### Approach 1: **Push Costly**
 
 ```java
-import java.util.LinkedList;
-import java.util.Queue;
+class QueueStack {
+    Queue<Integer> queue ;
+    public QueueStack() {
+        queue = new LinkedList<>();
 
-class StackUsingQueuesPushCostly {
-    Queue<Integer> q1 = new LinkedList<>();
-    Queue<Integer> q2 = new LinkedList<>();
-    
+    }
+
     public void push(int x) {
-        q2.add(x);
-        while (!q1.isEmpty()) {
-            q2.add(q1.poll());
+        int size = queue.size();
+        queue.add(x);
+        for(int i = 0 ; i < size ; i++){
+            queue.add(queue.poll());
         }
-        Queue<Integer> temp = q1;
-        q1 = q2;
-        q2 = temp;
+
     }
-    
+
     public int pop() {
-        return q1.isEmpty() ? -1 : q1.poll();
+        return queue.isEmpty() ? -1 :  queue.poll();
+
     }
-    
+
     public int top() {
-        return q1.isEmpty() ? -1 : q1.peek();
+        return queue.peek();
+
     }
-    
+
     public boolean isEmpty() {
-        return q1.isEmpty();
+        return queue.isEmpty();
     }
 }
+
 ```
 
 ### Approach 2: **Pop Costly**
 
 ```java
-import java.util.LinkedList;
-import java.util.Queue;
+class QueueStack {
+    Queue<Integer> queue ;
+    public QueueStack() {
+        queue = new LinkedList<>();
 
-class StackUsingQueuesPopCostly {
-    Queue<Integer> q1 = new LinkedList<>();
-    Queue<Integer> q2 = new LinkedList<>();
-    
+    }
+
     public void push(int x) {
-        q1.add(x);
+        queue.add(x);
+
     }
-    
+
     public int pop() {
-        if (q1.isEmpty()) return -1;
-        while (q1.size() > 1) {
-            q2.add(q1.poll());
+
+        int size = queue.size();
+        if(size == 0)
+            return -1;
+
+        for(int i = 0 ; i < size - 1; i++){
+            queue.add(queue.poll());
         }
-        int popped = q1.poll();
-        Queue<Integer> temp = q1;
-        q1 = q2;
-        q2 = temp;
-        return popped;
+        return queue.poll();
+
+
     }
-    
+
     public int top() {
-        if (q1.isEmpty()) return -1;
-        while (q1.size() > 1) {
-            q2.add(q1.poll());
+        int size = queue.size();
+        if(size == 0)
+            return -1;
+
+        for(int i = 0 ; i < size - 1; i++){
+            queue.add(queue.poll());
         }
-        int top = q1.peek();
-        q2.add(q1.poll());
-        Queue<Integer> temp = q1;
-        q1 = q2;
-        q2 = temp;
-        return top;
+        int topEle = queue.poll();
+        queue.add(topEle);
+        return topEle;
+
     }
-    
+
     public boolean isEmpty() {
-        return q1.isEmpty();
+        return queue.isEmpty();
     }
 }
+
 ```
 
 ### Time Complexity:
@@ -1025,8 +1032,50 @@ class PrefixToPostfix {
 ### **Complexity Analysis**
 All the above operations run in **O(N)** time with **O(N) space** due to stack usage.
 
+
 ---
 
+## **1. Validity & Matching Problems**
+
+These check if parentheses/brackets are balanced.
+
+1. **[20. Valid Parentheses](https://leetcode.com/problems/valid-parentheses/)** – Basic stack problem with `()`, `{}`, `[]`.
+2. **[1541. Minimum Insertions to Balance a Parentheses String](https://leetcode.com/problems/minimum-insertions-to-balance-a-parentheses-string/)** – Extra twist: every `'('` needs `"))"`.
+3. **[921. Minimum Add to Make Parentheses Valid](https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/)** – Count how many brackets need adding.
+4. **[2116. Check if a Parentheses String Can Be Valid](https://leetcode.com/problems/check-if-a-parentheses-string-can-be-valid/)** – Has locked/unlocked positions.
+
+---
+
+## **2. Generation Problems**
+
+These focus on generating all valid parentheses arrangements.
+
+5. **[22. Generate Parentheses](https://leetcode.com/problems/generate-parentheses/)** – Backtracking to generate all valid parentheses.
+6. **[301. Remove Invalid Parentheses](https://leetcode.com/problems/remove-invalid-parentheses/)** – Remove minimum invalid ones while generating valid possibilities.
+7. **[241. Different Ways to Add Parentheses](https://leetcode.com/problems/different-ways-to-add-parentheses/)** – Parentheses affect expression evaluation (DP + recursion).
+
+---
+
+## **3. Longest / Counting Problems**
+
+These deal with the longest valid substring or count of valid ones.
+
+8. **[32. Longest Valid Parentheses](https://leetcode.com/problems/longest-valid-parentheses/)** – Find length of longest valid substring.
+9. **[678. Valid Parenthesis String](https://leetcode.com/problems/valid-parenthesis-string/)** – `*` can be `(` or `)` or empty (greedy/DP).
+10. **[2115. Find All Possible Recipes from Given Supplies](https://leetcode.com/problems/find-all-possible-recipes-from-given-supplies/)** – Has parentheses-style dependency logic (topo sort).
+
+---
+
+## **4. Parsing & Expression Problems**
+
+Parentheses influence expression parsing and evaluation.
+
+11. **[224. Basic Calculator](https://leetcode.com/problems/basic-calculator/)** – Evaluate with `+ -` and parentheses.
+12. **[227. Basic Calculator II](https://leetcode.com/problems/basic-calculator-ii/)** – Without parentheses but more operators.
+13. **[772. Basic Calculator III](https://leetcode.com/problems/basic-calculator-iii/)** – With all `+ - * /` and parentheses.
+14. **[856. Score of Parentheses](https://leetcode.com/problems/score-of-parentheses/)** – Compute score using nesting rules.
+
+---
 
 ### **Monotonic Stack Pattern**
 

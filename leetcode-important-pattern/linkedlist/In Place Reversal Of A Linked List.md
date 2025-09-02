@@ -89,7 +89,7 @@ The problem follows the in-place Reversal of a LinkedList pattern. We can use a 
 4. Connect the p-1 and q+1 nodes to the reversed sub-list.
 
 ```java
-class Node {
+class ListNode {
     int value;
     Node next;
 
@@ -111,48 +111,40 @@ class Node {
 
 public class ReverseSubList {
 
-    public static Node reverseSubList(Node head, int p, int q) {
-        if (p == q) {
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        if (left == right) {
             return head;  // If the range is a single node, no need to reverse
         }
+        // create a dummy node to mark the head of this list
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
 
-        Node current = head;
-        Node previous = null;
-        int i = 0;
+        // make markers for currentNode and for the node before reversing
+        ListNode leftPre = dummy;
+        ListNode currNode = head;
 
-        // Move `current` to the `p`-th position
-        while (current != null && i < p - 1) {
-            previous = current;
-            current = current.next;
-            i++;
+        for (int i = 0; i < left - 1; i++) {
+            leftPre = leftPre.next;
+            currNode = currNode.next;
         }
 
-        // We will reverse the nodes between `p` and `q`
-        Node lastNodeOfFirstPart = previous;  // The node before `p`
-        Node lastNodeOfSubList = current;  // The node at `p`
-        Node next = null;
+        // post reverseing the LinkedList, 'currNode' will be the last node of the sublist
+        ListNode lastNodeOfSubList = currNode;
 
-        // Reverse the sublist between `p` and `q`
-        i = 0;
-        while (current != null && i < q - p + 1) {
-            next = current.next;
-            current.next = previous;
-            previous = current;
-            current = next;
-            i++;
+        ListNode preNode = null;
+        for (int i = 0; i <= right - left; i++) {
+            ListNode nextNode = currNode.next;
+            currNode.next = preNode;
+            preNode = currNode;
+            currNode = nextNode;
         }
 
-        // Connect the first part of the list
-        if (lastNodeOfFirstPart != null) {
-            lastNodeOfFirstPart.next = previous;  // Connect to the reversed sublist
-        } else {
-            head = previous;  // If reversing starts from the first node
-        }
+        // Join the pieces
+        leftPre.next = preNode;
+        lastNodeOfSubList.next = currNode;
 
-        // Connect the last part of the list
-        lastNodeOfSubList.next = current;
+        return dummy.next;
 
-        return head;
     }
 
     public static void main(String[] args) {

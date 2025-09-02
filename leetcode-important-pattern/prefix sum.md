@@ -236,9 +236,8 @@ Output: 16
 ```
 **Key Observations:**<br>
 Odd and Even Properties:
-* Odd + Odd = Even
-* Even + Even = Even
-* Odd + Even = Odd
+* Even - Odd = Odd
+* Odd - Even = Odd
 
 This property is crucial because it allows us to track the prefix sums of the array to determine whether a sub-array sum is odd.
 
@@ -249,7 +248,7 @@ This property is crucial because it allows us to track the prefix sums of the ar
 **Algorithm Steps:**
 
 **Initialization:**
-* Start with odd_count = 0 and even_count = 1 (to handle the case when the prefix sum is odd initially).
+* Start with odd_count = 0 and even_count = 0 (to handle the case when the prefix sum is odd initially).
 * Maintain a running prefix sum (current_sum = 0).
 * Initialize result = 0 to count the number of odd sub-arrays.
 
@@ -264,11 +263,11 @@ This property is crucial because it allows us to track the prefix sums of the ar
 ```java
 class Solution {
     public int numOfSubarrays(int[] arr) {
-        int oddCount = 0, evenCount = 1, prefixSum = 0, res = 0;
+        int oddCount = 0, evenCount = 0, prefixSum = 0, res = 0;
         for (int x : arr) {
             prefixSum += x;
             if (prefixSum % 2 == 1) {
-                res += evenCount;
+                res += (evenCount + 1);
                 oddCount++;
             } else {
                 res += oddCount;
@@ -285,9 +284,7 @@ class Solution {
 
 **Time Complexity**: O(n), where n is the length of the array, as we iterate through the array once.
 
-**Space Complexity:** O(1), as we use constant extra space.
-
-- [contiguous-array](https://leetcode.com/problems/contiguous-array/)
+**Space Complexity:** O(1), as we use constant extra space.<br>
 
 ## Prefix Sum Technique + Hashing(Important for Interview)
 
@@ -499,9 +496,15 @@ class Solution {
 
 
 **Important Questions Using Above Pattern:**
-- [Longest Sub-Array with Sum K](https://www.geeksforgeeks.org/problems/longest-sub-array-with-sum-k0809/1)
-- [Subarrays with equal 1s and 0s](https://www.geeksforgeeks.org/problems/count-subarrays-with-equal-number-of-1s-and-0s-1587115620/1)
-- [Largest Subarray of 0s and 1s](https://www.geeksforgeeks.org/problems/largest-subarray-of-0s-and-1s/1)
+- [Longest Sub-Array with Sum K](https://www.geeksforgeeks.org/problems/longest-sub-array-with-sum-k0809/1)<br>
+- [Subarrays with equal 1s and 0s](https://www.geeksforgeeks.org/problems/count-subarrays-with-equal-number-of-1s-and-0s-1587115620/1)<br>
+- [Largest Subarray of 0s and 1s](https://www.geeksforgeeks.org/problems/largest-subarray-of-0s-and-1s/1)<br>
+- [number-of-sub-arrays-with-even-sum](https://www.geeksforgeeks.org/problems/find-the-number-of-sub-arrays-having-even-sum1533/1)<br>
+- [contiguous-array](https://leetcode.com/problems/contiguous-array/)<br>
+- [Count Number of Nice Subarrays](https://leetcode.com/problems/count-number-of-nice-subarrays/description/)<br>
+- [Binary Subarrays With Sum](https://leetcode.com/problems/binary-subarrays-with-sum/description/)<br>
+- [2364. Count Number of Bad Pairs](https://leetcode.com/problems/count-number-of-bad-pairs/)<br>
+- [Minimum Operations to Reduce X to Zero](https://leetcode.com/problems/minimum-operations-to-reduce-x-to-zero/)<br>
 
 ## Prefix Sum with Division / Modulo
 
