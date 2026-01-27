@@ -1,17 +1,19 @@
 package StackDataStructures.implementationOfStack;
-class Stack{
+class StackDS {
     int size;
     int top;
     int[] arr;
-    public Stack(int size ,int top ){
+    public StackDS(int size , int top ){
         this.size = size;
         this.top = top;
         arr = new int[size];
     }
 
     public void push(int element) {
-        if(top == size)
+        if(top + 1  >= size){
             System.out.println("Stack Overflow");
+            return;
+        }
         top++;
         arr[top] = element;
     }
@@ -40,11 +42,13 @@ class Stack{
 }
 public class StackImplementationUsingArray {
     public static void main(String[] args) {
-        Stack st = new Stack(10000,-1);
+        StackDS st = new StackDS(5,-1);
         st.push(10);
         st.push(20);
         st.push(30);
         st.push(40);
+        st.push(50);
+        st.push(60); // Stack Overflow
         System.out.println(st.pop());
         System.out.println(st.top());
         System.out.println(st.size());

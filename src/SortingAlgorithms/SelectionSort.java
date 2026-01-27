@@ -21,14 +21,17 @@ public class SelectionSort {
                 }
             }
             if(minIndex != i){
-                int temp = arr[i];
-                arr[i] = arr[minIndex];
-                arr[minIndex] = temp;
+                swap(arr , i , minIndex);
                 swapped = true;
             }
             if(swapped == false)
                 break;
         }
+    }
+    private static void swap(int[] arr , int i , int j){
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
     }
 }
 /*
