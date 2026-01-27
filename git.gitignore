@@ -1,2 +1,10 @@
 # Ignore Java class files
 *.class
+# Ignore log files
+*.log
+# Ignore temporary files
+*.tmp
+# Ignore compiled Python files
+*.pyc
+# Ignore compiled Java files
+*.class
